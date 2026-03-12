@@ -1,0 +1,42 @@
+﻿<Window x:Class="ClusterVisualizer.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ClusterAnalazy"
+        Height="350"
+        Width="350"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBlock Text="ClusterAnalazy2000
+"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 20"/>
+
+            <TextBlock Text="Username"/>
+            <TextBox x:Name="UsernameBox"
+                     Height="30"
+                     Margin="0 5 0 10"/>
+
+            <TextBlock Text="Password"/>
+            <PasswordBox x:Name="PasswordBox"
+                         Height="30"
+                         Margin="0 5 0 20"/>
+
+            <Button Content="Login"
+                    Height="35"
+                    Click="Login_Click"/>
+
+            <TextBlock x:Name="ErrorText"
+                       Foreground="Red"
+                       Margin="0 10 0 0"
+                       TextAlignment="Center"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>
