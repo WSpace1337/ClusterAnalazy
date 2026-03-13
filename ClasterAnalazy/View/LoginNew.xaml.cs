@@ -1,26 +1,27 @@
 ﻿using ClasterAnalazy;
 using System;
 using System.Windows;
+using ClusterVisualizer.ViewModels;
 
 namespace ClusterVisualizer.Views
 {
     public partial class LoginWindow : Window
     {
-        private AuthenticationService authService;
+        private LoginViewModel viewModel;
 
         public LoginWindow()
         {
             InitializeComponent();
-            authService = new AuthenticationService();
+
+            viewModel = new LoginViewModel();
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameBox.Text;
-            string password = PasswordBox.Password;
+            viewModel.Username = UsernameBox.Text;
+            viewModel.Password = PasswordBox.Password;
 
-            bool success = authService.Login(username, password);
-            if (success)
+            if(viewModel.Login())
             {
                 MainWindow main = new MainWindow();
                 main.Show();
@@ -28,7 +29,7 @@ namespace ClusterVisualizer.Views
             }
             else
             {
-                ErrorText.Text = "Invalid username or password";
+                ErrorText.Text = "Invalid login or password";
             }
         }
     }

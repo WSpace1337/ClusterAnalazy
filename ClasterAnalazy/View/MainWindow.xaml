@@ -1,12 +1,53 @@
-﻿<Window x:Class="ClasterAnalazy.MainWindow"
+﻿<Window x:Class="ClusterVisualizer.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ClasterAnalazy"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+        Title="Cluster Visualizer"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+
+            <Button Content="Load CSV"
+                    Width="120"
+                    Margin="0 0 10 0"
+                    Click="LoadData_Click"/>
+
+            <Button Content="Run Clustering"
+                    Width="140"
+                    Margin="0 0 10 0"
+                    Click="RunClustering_Click"/>
+
+            <TextBlock Text="Cluster Count:"
+                       VerticalAlignment="Center"
+                       Margin="10 0 5 0"/>
+
+            <TextBox x:Name="ClusterCountBox"
+                     Width="50"
+                     Text="3"/>
+        </StackPanel>
+
+        <!-- График -->
+        <oxy:PlotView x:Name="PlotView"
+                      Grid.Row="1"/>
+
+        <!-- Статус -->
+        <TextBlock x:Name="StatusText"
+                   Grid.Row="2"
+                   Text="Ready"
+                   Margin="5"
+                   FontStyle="Italic"/>
+
     </Grid>
+
 </Window>

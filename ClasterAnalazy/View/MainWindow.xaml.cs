@@ -13,16 +13,67 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ClasterAnalazy
+using ClusterVisualizer.ViewModels;
+using ClusterVisualizer.Visualization;
+using Microsoft.Win32;
+using ClusterVisualizer.Services;
+using OxyPlot.Wpf;
+
+
+
+namespace ClusterVisualizer.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private MainViewModel viewModel;
+        private PlotService plotService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            viewModel = new MainViewModel();
+            plotService = new PlotService();
+
+            this.DataContext = viewModel;
+        }
+
+        private void LoadData_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "CSV Files (*.csv)|*.csv";
+
+            if (dialog.ShowDialog() == true)
+            {
+                viewModel.LoadData(dialog.FileName);
+                StatusText.Text = dialog.FileName;
+            }
+        }
+
+        private void RunClustering_Click(object sender, RoutedEventArgs e)
+        {
+            if(viewModel.Points == null)
+            {
+                StatusText.Text = "Load data first";
+                return;
+            }
+
+            if (!int.TryParse(ClusterCountBox.Text, out int k) || k <= 0)
+            {
+                StatusText.Text = "Enter a valid cluster count (number >0)";
+                return;
+            }
+
+            try
+            {
+                var result = viewModel.RunClustering(k);
+                PlotView.Model = plotService.BuildPlot(result.Points);
+                StatusText.Text = $"Clustering finished: {k} clusters found.";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = "Error: " + ex.Message;
+            }
         }
     }
 }
