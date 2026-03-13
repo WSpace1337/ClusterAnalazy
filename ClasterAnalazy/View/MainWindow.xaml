@@ -48,7 +48,13 @@
                         Content="Users"
                         Click="Users_Click"
                         Style="{StaticResource SidebarButton}"/>
-
+                <Button x:Name="SettingMenu"
+                        Content="Setting"
+                        Click="Setting_Click"
+                        Style="{StaticResource SidebarButton}"/>
+                <TextBlock x:Name="UserInfo"
+                           DockPanel.Dock="Left"
+                           Foreground="White"/>
             </StackPanel>
         </Border>
 

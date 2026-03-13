@@ -1,26 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using ClusterVisualizer.ViewModels;
 using ClusterVisualizer.Visualization;
-using Microsoft.Win32;
 using ClusterVisualizer.Services;
-using OxyPlot.Wpf;
 using ClusterVisualizer.Core.Models;
 using ClusterVisualizer.Pages;
-using ClusterAnalazy.Services;
+using System;
 
 
 namespace ClusterVisualizer.Views
@@ -33,11 +18,13 @@ namespace ClusterVisualizer.Views
         public MainWindow()
         {
             InitializeComponent();
+            Window_Loaded();
 
             viewModel = new MainViewModel();
             plotService = new PlotService();
 
             MainFrame.Navigate(new ClusteringPage());
+
         }
 
         private void Clustering_Click(object sender, RoutedEventArgs e)
@@ -55,15 +42,31 @@ namespace ClusterVisualizer.Views
             MainFrame.Navigate(new UsersPage());
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Setting_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new SettingPage());
+        }
+
+        private void Window_Loaded()
         {
             var user = SessionManager.CurrentUser;
 
+            if(user == null)
+            {
+                UserInfo.Text = "no user session";
+                UsersMenu.Visibility=Visibility.Collapsed;
+                return;
+            }
+
             UserInfo.Text = $"User: {user.Username} | Role: {user.Role}";
 
-            if (user.Role == )
+            if (user.Role != User.UserRole.Admin)
             {
                 UsersMenu.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                UsersMenu.Visibility = Visibility.Visible;
             }
         }
     }
