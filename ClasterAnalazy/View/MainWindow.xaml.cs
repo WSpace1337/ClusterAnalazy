@@ -20,6 +20,7 @@ using ClusterVisualizer.Services;
 using OxyPlot.Wpf;
 using ClusterVisualizer.Core.Models;
 using ClusterVisualizer.Pages;
+using ClusterAnalazy.Services;
 
 
 namespace ClusterVisualizer.Views
@@ -52,6 +53,18 @@ namespace ClusterVisualizer.Views
         private void Users_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new UsersPage());
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var user = SessionManager.CurrentUser;
+
+            UserInfo.Text = $"User: {user.Username} | Role: {user.Role}";
+
+            if (user.Role == )
+            {
+                UsersMenu.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

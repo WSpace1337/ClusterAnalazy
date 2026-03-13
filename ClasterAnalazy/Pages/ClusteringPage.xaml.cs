@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ClasterAnalazy.Pages
+namespace ClusterVisualizer.Pages
 {
     /// <summary>
     /// Interaction logic for ClusteringPage.xaml
