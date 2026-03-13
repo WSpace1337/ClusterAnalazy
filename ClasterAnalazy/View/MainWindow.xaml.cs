@@ -67,7 +67,7 @@ namespace ClusterVisualizer.Views
             try
             {
                 var result = viewModel.RunClustering(k);
-                PlotView.Model = plotService.BuildPlot(result.Points);
+                PlotView.Model = plotService.BuildPlot(result);
                 StatusText.Text = $"Clustering finished: {k} clusters found.";
             }
             catch (Exception ex)

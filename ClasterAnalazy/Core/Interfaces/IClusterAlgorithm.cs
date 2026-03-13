@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using ClusterVisualizer.Core.Models;
 
 namespace ClusterVisualizer.Interfaces
 {

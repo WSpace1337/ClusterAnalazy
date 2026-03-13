@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -9,16 +10,22 @@ namespace ClusterVisualizer.Services
         public List<PointData> Load(string path)
         {
             var points = new List<PointData>();
+            
+            var lines = File.ReadAllLines(path);
 
-            foreach(var line in File.ReadLines(path).Skip(1))
+            for (int i = 1; i < lines.Length; i++) 
             {
-                var parts = line.Split(',');
+                var parts = lines[i].Split(',');
+
+                double age = double.Parse(parts[1], CultureInfo.InvariantCulture);
+                double income = double.Parse(parts[4], CultureInfo.InvariantCulture);
 
                 points.Add(new PointData
                 {
-                    X = double.Parse(parts[0]),
-                    Y = double.Parse(parts[1])
+                    X = age/100.0,
+                    Y = income/100.0,
                 });
+
             }
             return points;
         }
