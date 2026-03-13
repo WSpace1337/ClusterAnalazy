@@ -19,7 +19,7 @@ using Microsoft.Win32;
 using ClusterVisualizer.Services;
 using OxyPlot.Wpf;
 using ClusterVisualizer.Core.Models;
-
+using ClusterVisualizer.Pages;
 
 
 namespace ClusterVisualizer.Views
@@ -36,77 +36,22 @@ namespace ClusterVisualizer.Views
             viewModel = new MainViewModel();
             plotService = new PlotService();
 
-            this.DataContext = viewModel;
+            MainFrame.Navigate(new ClusteringPage());
         }
 
-        private void LoadData_Click(object sender, RoutedEventArgs e)
+        private void Clustering_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "CSV Files (*.csv)|*.csv";
-
-            if (dialog.ShowDialog() == true)
-            {
-                viewModel.LoadData(dialog.FileName);
-                StatusText.Text = dialog.FileName;
-            }
+            MainFrame.Navigate(new ClusteringPage());
         }
 
-        private void RunClustering_Click(object sender, RoutedEventArgs e)
+        private void Elbow_Click(object sender, RoutedEventArgs e)
         {
-            if(viewModel.Points == null)
-            {
-                StatusText.Text = "Load data first";
-                return;
-            }
-
-            if (!int.TryParse(ClusterCountBox.Text, out int k) || k <= 0)
-            {
-                StatusText.Text = "Enter a valid cluster count (number >0)";
-                return;
-            }
-
-            try
-            {
-                var result = viewModel.RunClustering(k);
-                PlotView.Model = plotService.BuildPlot(result);
-                StatusText.Text = $"Clustering finished: {k} clusters found.";
-            }
-            catch (Exception ex)
-            {
-                StatusText.Text = "Error: " + ex.Message;
-            }
+            MainFrame.Navigate(new ElbowPage());
         }
 
-        private void FindK_Click(object sender, RoutedEventArgs e)
+        private void Users_Click(object sender, RoutedEventArgs e)
         {
-            if (viewModel.Points == null)
-            {
-                StatusText.Text = "Load data first";
-                return;
-            }
-
-            var elbowService = new ElbowService();
-            var values = elbowService.Calculate(viewModel.Points, 10);
-
-            var kneeDetector = new KneeDetector();
-
-            int optimalK = kneeDetector.FindOptimalK(values);
-
-            StatusText.Text = ($"Optimal cluster: {optimalK}");
-
-            PlotView.Model = plotService.BuildElbowPlot(values);
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            var user = SessionManager.CurrentUser;
-
-            UserInfo.Text = $"User: {user.Username}| Role: {user.Role}";
-
-            if(user.Role == User.UserRole.Analyst)
-            {
-                AdminPanel.Visibility = Visibility.Collapsed;
-            }
+            MainFrame.Navigate(new UsersPage());
         }
     }
 }

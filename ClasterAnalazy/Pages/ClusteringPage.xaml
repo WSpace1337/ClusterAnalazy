@@ -1,0 +1,34 @@
+﻿<Page x:Class="ClusterVisualizer.Pages.ClusteringPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+
+            <Button Content="Load CSV"
+                    Width="120"
+                    Margin="5"/>
+
+            <Button Content="Run Clustering"
+                    Width="140"
+                    Margin="5"/>
+
+            <Button Content="Find Optimal K"
+                    Width="140"
+                    Margin="5"/>
+
+        </StackPanel>
+
+        <oxy:PlotView x:Name="PlotView"
+                      Grid.Row="1"/>
+
+    </Grid>
+
+</Page>

@@ -102,6 +102,15 @@
     <Compile Include="Core\Models\PointData.cs" />
     <Compile Include="Core\Models\users.cs" />
     <Compile Include="Data\JsonUserRepository.cs" />
+    <Compile Include="Pages\ClusteringPage.xaml.cs">
+      <DependentUpon>ClusteringPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ElbowPage.xaml.cs">
+      <DependentUpon>ElbowPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UsersPage.xaml.cs">
+      <DependentUpon>UsersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\ClusterService.cs" />
     <Compile Include="Services\DataLoader.cs" />
     <Compile Include="Services\ElbowService.cs" />
@@ -114,6 +123,18 @@
       <DependentUpon>LoginNew.xaml</DependentUpon>
     </Compile>
     <Compile Include="Visualization\PlotService.cs" />
+    <Page Include="Pages\ClusteringPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ElbowPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\UsersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\LoginNew.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
