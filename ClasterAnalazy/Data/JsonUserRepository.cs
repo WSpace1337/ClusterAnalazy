@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System;
 
+using ClusterVisualizer.Core.Models;
+
 public class JsonUserRepository
 {
     // Используем Path.Combine для более надежного пути
@@ -25,7 +27,6 @@ public class JsonUserRepository
                 return new List<User>();
             }
 
-            // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Добавляем опции десериализации
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true // Позволяет читать "username" как "Username"
@@ -35,7 +36,6 @@ public class JsonUserRepository
         }
         catch (JsonException)
         {
-            // Если JSON файл поврежден или имеет неверный формат
             return new List<User>();
         }
     }
@@ -44,7 +44,6 @@ public class JsonUserRepository
     {
         var users = GetUsers();
 
-        // Добавляем .Trim() и StringComparison, чтобы поиск не зависел от пробелов и регистра
         return users.FirstOrDefault(u =>
             u.Username.Equals(username.Trim(), StringComparison.OrdinalIgnoreCase));
     }

@@ -18,6 +18,7 @@ using ClusterVisualizer.Visualization;
 using Microsoft.Win32;
 using ClusterVisualizer.Services;
 using OxyPlot.Wpf;
+using ClusterVisualizer.Core.Models;
 
 
 
@@ -73,6 +74,38 @@ namespace ClusterVisualizer.Views
             catch (Exception ex)
             {
                 StatusText.Text = "Error: " + ex.Message;
+            }
+        }
+
+        private void FindK_Click(object sender, RoutedEventArgs e)
+        {
+            if (viewModel.Points == null)
+            {
+                StatusText.Text = "Load data first";
+                return;
+            }
+
+            var elbowService = new ElbowService();
+            var values = elbowService.Calculate(viewModel.Points, 10);
+
+            var kneeDetector = new KneeDetector();
+
+            int optimalK = kneeDetector.FindOptimalK(values);
+
+            StatusText.Text = ($"Optimal cluster: {optimalK}");
+
+            PlotView.Model = plotService.BuildElbowPlot(values);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var user = SessionManager.CurrentUser;
+
+            UserInfo.Text = $"User: {user.Username}| Role: {user.Role}";
+
+            if(user.Role == User.UserRole.Analyst)
+            {
+                AdminPanel.Visibility = Visibility.Collapsed;
             }
         }
     }

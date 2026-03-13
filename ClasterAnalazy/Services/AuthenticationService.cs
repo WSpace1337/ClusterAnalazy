@@ -1,23 +1,27 @@
 ﻿using System.Linq;
 using System;
+using System.Collections.Generic;
+using ClusterVisualizer.Core.Models;
+using System.Windows.Documents;
+using ClusterAnalazy.Services;
+using ClusterVisualizer.ViewModels;
 
+namespace ClusterVisualizer.Services { 
 public class AuthenticationService
-{
-        private readonly JsonUserRepository repository;
+    {
+        private List<User> users;
 
         public AuthenticationService()
         {
-            repository = new JsonUserRepository();
+            var userService = new UserService();
+            users = userService.LoadUser();
         }
 
-    public bool Login(string username, string password)
-    {
-        var users = repository.GetUsers();
-
-        var user = users.FirstOrDefault(u => u.Username.Equals(username.Trim(), StringComparison.OrdinalIgnoreCase));
-
-        if (user == null) return false;
-
-        return user.Password == password;
+        public User Login(string username, string password)
+        {
+            return users.FirstOrDefault(u =>
+            u.Username == username &&
+            u.Password == password);
+        }
     }
 }

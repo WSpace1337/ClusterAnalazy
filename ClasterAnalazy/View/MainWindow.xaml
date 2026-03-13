@@ -9,44 +9,126 @@
 
     <Grid Margin="10">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <!-- Две колонки -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="260"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Верхняя панель -->
-        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+        <!-- Основная часть -->
+        <Grid Grid.Column="0">
 
-            <Button Content="Load CSV"
-                    Width="120"
-                    Margin="0 0 10 0"
-                    Click="LoadData_Click"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <Button Content="Run Clustering"
-                    Width="140"
-                    Margin="0 0 10 0"
-                    Click="RunClustering_Click"/>
+            <!-- Верхняя панель -->
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
 
-            <TextBlock Text="Cluster Count:"
-                       VerticalAlignment="Center"
-                       Margin="10 0 5 0"/>
+                <Button Content="Load CSV"
+                        Width="120"
+                        Margin="0 0 10 0"
+                        Click="LoadData_Click"/>
 
-            <TextBox x:Name="ClusterCountBox"
-                     Width="50"
-                     Text="3"/>
-        </StackPanel>
+                <Button Content="Run Clustering"
+                        Width="140"
+                        Margin="0 0 10 0"
+                        Click="RunClustering_Click"/>
 
-        <!-- График -->
-        <oxy:PlotView x:Name="PlotView"
-                      Grid.Row="1"/>
+                <TextBlock Text="Cluster Count:"
+                           VerticalAlignment="Center"
+                           Margin="10 0 5 0"/>
 
-        <!-- Статус -->
-        <TextBlock x:Name="StatusText"
-                   Grid.Row="2"
-                   Text="Ready"
-                   Margin="5"
-                   FontStyle="Italic"/>
+                <TextBox x:Name="ClusterCountBox"
+                         Width="50"
+                         Text="3"/>
+
+                <Button Content="Find Optimal K"
+                        Width="130"
+                        Margin="10 0 10 0"
+                        Click="FindK_Click"/>
+
+            </StackPanel>
+
+            <!-- График -->
+            <oxy:PlotView x:Name="PlotView"
+                          Grid.Row="1"/>
+
+            <!-- Нижняя строка -->
+            <DockPanel Grid.Row="2" Margin="5">
+
+                <TextBlock x:Name="StatusText"
+                           Text="Ready"
+                           FontStyle="Italic"
+                           DockPanel.Dock="Left"/>
+
+                <TextBlock x:Name="UserInfo"
+                           DockPanel.Dock="Right"
+                           Foreground="Gray"/>
+
+            </DockPanel>
+
+        </Grid>
+
+        <!-- Admin Panel -->
+        <Border Grid.Column="1"
+                Background="#F4F6F8"
+                CornerRadius="10"
+                Padding="15"
+                Margin="10 0 0 0"
+                x:Name="AdminPanel">
+
+            <StackPanel>
+
+                <TextBlock Text="Administration"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 10"/>
+
+                <Separator Margin="0 0 0 10"/>
+
+                <!-- Add User -->
+                <Border Background="White"
+                        CornerRadius="8"
+                        Padding="10"
+                        Margin="0 0 0 10">
+
+                    <StackPanel>
+
+                        <TextBlock Text="Add User"
+                                   FontWeight="Bold"
+                                   Margin="0 0 0 5"/>
+
+                        <Button Content="Open"
+                                Height="30"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- Delete User -->
+                <Border Background="White"
+                        CornerRadius="8"
+                        Padding="10">
+
+                    <StackPanel>
+
+                        <TextBlock Text="Delete User"
+                                   FontWeight="Bold"
+                                   Margin="0 0 0 5"/>
+
+                        <Button Content="Open"
+                                Height="30"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </StackPanel>
+
+        </Border>
 
     </Grid>
 

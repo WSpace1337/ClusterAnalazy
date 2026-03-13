@@ -1,4 +1,5 @@
 ﻿
+using ClusterVisualizer.Services;
 namespace ClusterVisualizer.ViewModels
 {
     public class LoginViewModel
@@ -15,7 +16,14 @@ namespace ClusterVisualizer.ViewModels
 
         public bool Login()
         {
-            return authenticationService.Login(Username, Password); 
+            var user = authenticationService.Login(Username, Password);
+            if (user == null)
+            {
+                return false;
+            }
+            SessionManager.CurrentUser = user;
+
+            return true;
         }
     }
 }

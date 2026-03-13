@@ -105,6 +105,9 @@
     <Compile Include="Services\ClusterService.cs" />
     <Compile Include="Services\DataLoader.cs" />
     <Compile Include="Services\ElbowService.cs" />
+    <Compile Include="Services\KneeDetector.cs" />
+    <Compile Include="Services\SessionManager.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="View\LoginNew.xaml.cs">
