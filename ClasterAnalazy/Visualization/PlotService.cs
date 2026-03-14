@@ -1,7 +1,6 @@
 ﻿using ClusterVisualizer.Core.Models;
 using OxyPlot;
 using OxyPlot.Series;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,6 +38,22 @@ namespace ClusterVisualizer.Visualization {
                     Console.WriteLine(p.ClusterId);
                 }
                 */
+                var noisePoints = result.Points.Where(p => p.ClusterId == -2).ToList();
+                if (noisePoints.Any())
+                {
+                    var noiseSeries = new ScatterSeries
+                    {
+                        MarkerType = MarkerType.Circle,
+                        MarkerFill = OxyColors.Gray,
+                        MarkerSize = 3,
+                        Title = "Noise"
+                    };
+                    foreach (var p in noisePoints)
+                    {
+                        noiseSeries.Points.Add(new ScatterPoint(p.X, p.Y));
+                    }
+                    model.Series.Add(noiseSeries);
+                }
 
                 foreach (var p in result.Points.Where(p => p.ClusterId ==i))
                 {

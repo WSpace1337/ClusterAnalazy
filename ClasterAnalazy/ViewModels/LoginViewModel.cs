@@ -1,5 +1,4 @@
-﻿
-using ClusterVisualizer.Services;
+﻿using ClusterVisualizer.Services;
 namespace ClusterVisualizer.ViewModels
 {
     public class LoginViewModel

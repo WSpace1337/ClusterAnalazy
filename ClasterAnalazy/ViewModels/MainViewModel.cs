@@ -1,6 +1,5 @@
 ﻿using ClusterVisualizer.Core.Algorithms;
 using ClusterVisualizer.Services;
-using System.Windows.Documents;
 using System.Collections.Generic;
 using ClusterVisualizer.Core.Models;
 

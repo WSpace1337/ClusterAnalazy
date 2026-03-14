@@ -7,8 +7,9 @@ using ClusterVisualizer.Interfaces;
 
 namespace ClusterVisualizer.Core.Algorithms
 {
-    public class KMeansAlgorithm : IClusterAlgorithm
+    public class KMeansAlgorithm : IClusteringAlgorithm
     {
+        public string Name => "K-means";
         public ClusterResult Calculate(List<PointData> points, int k)
         {
             Random rand = new Random();
@@ -41,12 +42,12 @@ namespace ClusterVisualizer.Core.Algorithms
                             minDistance = dist;
                             cluster = i;
                         }
+                    }
                         if(point.ClusterId!= cluster)
                         {
                             point.ClusterId = cluster;
                             changed = true;
                         }
-                    }
                 }
                 for (int i = 0;i<k; i++)
                 {

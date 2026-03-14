@@ -1,33 +1,63 @@
 ﻿<Page x:Class="ClusterVisualizer.Pages.ClusteringPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf">
+      xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+      Title="ClusteringPage">
 
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
 
-        <StackPanel Orientation="Horizontal">
+        <!-- Панель управления -->
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+            
 
-            <Button Content="Load CSV"
+            <Button Content="📂 Load CSV"
                     Width="120"
-                    Margin="5"/>
+                    Margin="0 0 10 0"
+                    Click="LoadData_Click"/>
 
-            <Button Content="Run Clustering"
+            <Button Content="⚙ Run Clustering"
                     Width="140"
-                    Margin="5"/>
+                    Margin="0 0 10 0"
+                    Click="RunClustering_Click"/>
 
-            <Button Content="Find Optimal K"
-                    Width="140"
-                    Margin="5"/>
+            <TextBlock Text="Clusters:"
+                       VerticalAlignment="Center"
+                       Margin="10 0 5 0"/>
+
+            <TextBox x:Name="ClusterCountBox"
+                     Width="50"
+                     Text="3"/>
+
+            <TextBlock Text="Algorithm:"
+               VerticalAlignment="Center"
+               Margin="15 0 5 0"/>
+
+            <ComboBox x:Name="AlgorithmBox"
+              Width="150"/>
+
+
 
         </StackPanel>
+        
 
+        <!-- График -->
         <oxy:PlotView x:Name="PlotView"
                       Grid.Row="1"/>
+
+        <!-- Статус -->
+        <TextBlock x:Name="StatusText"
+                   FontSize="16"
+                   Grid.Row="2"
+                   Text="Ready"
+                   FontStyle="Italic"
+                   Margin="5"/>
 
     </Grid>
 

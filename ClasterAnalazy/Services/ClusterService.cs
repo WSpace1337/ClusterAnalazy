@@ -6,9 +6,9 @@ namespace ClusterVisualizer.Services
 {
     public class ClusterService
     {
-        private readonly IClusterAlgorithm algorithm;
+        private readonly IClusteringAlgorithm algorithm;
 
-        public ClusterService(IClusterAlgorithm algorithm)
+        public ClusterService(IClusteringAlgorithm algorithm)
         {
             this.algorithm = algorithm;
         }

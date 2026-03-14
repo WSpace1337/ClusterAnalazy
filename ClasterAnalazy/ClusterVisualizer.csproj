@@ -96,8 +96,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\Algoritms\DBSCANAlgorithm.cs" />
     <Compile Include="Core\Algoritms\KMeansAlgorithm.cs" />
-    <Compile Include="Core\Interfaces\IClusterAlgorithm.cs" />
+    <Compile Include="Core\Interfaces\IClusteringAlgorithm.cs" />
     <Compile Include="Core\Models\ClusterResult.cs" />
     <Compile Include="Core\Models\PointData.cs" />
     <Compile Include="Core\Models\users.cs" />
@@ -114,8 +115,10 @@
     <Compile Include="Pages\UsersPage.xaml.cs">
       <DependentUpon>UsersPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\ClusteringFactory.cs" />
     <Compile Include="Services\ClusterService.cs" />
     <Compile Include="Services\DataLoader.cs" />
+    <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\ElbowService.cs" />
     <Compile Include="Services\KneeDetector.cs" />
     <Compile Include="Services\SessionManager.cs" />
