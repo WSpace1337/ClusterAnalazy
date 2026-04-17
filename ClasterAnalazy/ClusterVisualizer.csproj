@@ -121,6 +121,7 @@
     <Compile Include="Services\ClusterService.cs" />
     <Compile Include="Services\DataLoader.cs" />
     <Compile Include="Services\DataService.cs" />
+    <Compile Include="Services\DbscanParameterService.cs" />
     <Compile Include="Services\ElbowService.cs" />
     <Compile Include="Services\KneeDetector.cs" />
     <Compile Include="Services\SessionManager.cs" />

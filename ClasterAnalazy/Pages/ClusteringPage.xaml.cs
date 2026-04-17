@@ -37,6 +37,8 @@ namespace ClusterVisualizer.Pages
             plotService = new PlotService();
 
             this.DataContext = viewModel;
+
+            UpdateAlgorithmUI();
             
             //проверка на подгруженость даных, если загружены,
             //то работа идет с этим файлом
@@ -130,7 +132,8 @@ namespace ClusterVisualizer.Pages
             }
         }
 
-        private void ShowDendrogram_Click(object sender, RoutedEventArgs e)
+        //денденограмма 
+        private async void ShowDendrogram_Click(object sender, RoutedEventArgs e)
         {
             var points = DataService.Instance.Points;
 
@@ -140,13 +143,38 @@ namespace ClusterVisualizer.Pages
                 return;
             }
 
-            var hierarchical = new HierarchicalClustering();
+            try
+            {
+                ControlsPanel.IsEnabled = false;
+                ProgressBar.Visibility = Visibility.Visible;
+                StatusText.Text = "Building dendrogram...";
 
-            var root = hierarchical.BuildTree(points.Take(100).ToList());
+                var clonedPoints = points.Take(50).Select(p => new PointData
+                {
+                    X = p.X,
+                    Y = p.Y
+                }).ToList();
 
-            PlotView.Model = plotService.BuildDendrogram(root);
+                var hierarchical = new HierarchicalClustering();
 
-            StatusText.Text = "Dendrogram built";
+                var root = await Task.Run(() =>
+                {
+                    return hierarchical.BuildTree(clonedPoints);
+                });
+
+                PlotView.Model = plotService.BuildDendrogram(root);
+
+                StatusText.Text = "Dendrogram built";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = "Error: " + ex.Message;
+            }
+            finally
+            {
+                ControlsPanel.IsEnabled = true;
+                ProgressBar.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void RunClustering_Click(object sender, RoutedEventArgs e)
@@ -159,20 +187,23 @@ namespace ClusterVisualizer.Pages
                 return;
             }
 
-            if (!int.TryParse(ClusterCountBox.Text, out int k) || k <= 0)
+            var selectedAlgorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
+
+            if (selectedAlgorithm == null)
             {
-                StatusText.Text = "Enter valid K";
+                StatusText.Text = "Select an algorithm";
                 return;
             }
 
             try
             {
-                StatusText.Text = "Clustering...";
-
                 ControlsPanel.IsEnabled = false;
                 ProgressBar.Visibility = Visibility.Visible;
+                StatusText.Text = "Clustering...";
 
-                var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
+                string epsText = EpsBox.Text;
+                string minPtsText = MinPtsBox.Text;
+                string clusterCountText = ClusterCountBox.Text;
 
                 var clonedPoints = points.Select(p => new PointData
                 {
@@ -180,25 +211,123 @@ namespace ClusterVisualizer.Pages
                     Y = p.Y
                 }).ToList();
 
-                var result = await Task.Run(() =>
+                ClusterResult result = await Task.Run(() =>
                 {
-                    return algorithm.Calculate(clonedPoints, k);
+                    if (selectedAlgorithm is DBSCANAlgorithm)
+                    {
+                        if (!double.TryParse(epsText, out double eps) || eps <= 0)
+                            throw new Exception("Invalid eps value");
+
+                        if (!int.TryParse(minPtsText, out int minPts) || minPts <= 0)
+                            throw new Exception("Invalid minPts value");
+
+                        var dbscan = new DBSCANAlgorithm(eps, minPts);
+                        return dbscan.Calculate(clonedPoints, 0);
+                    }
+                    else
+                    {
+                        if (!int.TryParse(clusterCountText, out int k) || k <= 0)
+                            throw new Exception("Invalid cluster count");
+
+                        return selectedAlgorithm.Calculate(clonedPoints, k);
+                    }
                 });
 
                 DataService.Instance.SetClusterResult(result);
-
                 PlotView.Model = plotService.BuildPlot(result);
-
-                StatusText.Text = $"Done ({k} clusters)";
+                StatusText.Text = $"Done ({result.ClusterCount} clusters)";
             }
             catch (Exception ex)
             {
-                StatusText.Text = ex.Message;
+                StatusText.Text = "Error: " + ex.Message;
             }
             finally
-            { 
+            {
                 ControlsPanel.IsEnabled = true;
                 ProgressBar.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void FindEps_Click(object sender, RoutedEventArgs e)
+        {
+            var points = DataService.Instance.Points;
+
+            if (points == null)
+            {
+                StatusText.Text = "Load data first";
+                return;
+            }
+
+            if (!int.TryParse(MinPtsBox.Text, out int minPts) || minPts <= 0)
+            {
+                StatusText.Text = "Invalid minPts";
+                return;
+            }
+
+            try
+            {
+                ControlsPanel.IsEnabled = false;
+                ProgressBar.Visibility = Visibility.Visible;
+                StatusText.Text = "Calculating eps...";
+
+                var clonedPoints = points.Select(p => new PointData
+                {
+                    X = p.X,
+                    Y = p.Y
+                }).ToList();
+
+                var service = new DbscanParameterService();
+
+                var result = await Task.Run(() =>
+                {
+                    var distances = service.CalculateKDistance(clonedPoints, minPts);
+                    var eps = service.FindBestEps(distances);
+
+                    return new { Distances = distances, Eps = eps };
+                });
+
+                PlotView.Model = plotService.BuildKDistancePlot(result.Distances, result.Eps);
+                EpsBox.Text = result.Eps.ToString("F3");
+                StatusText.Text = $"Suggested eps = {result.Eps:F3}";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = "Error: " + ex.Message;
+            }
+            finally
+            {
+                ControlsPanel.IsEnabled = true;
+                ProgressBar.Visibility = Visibility.Collapsed;
+            }
+        }
+        private void AlgorithmBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateAlgorithmUI();
+        }
+
+        private void UpdateAlgorithmUI()
+        {
+            var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
+
+            if (algorithm == null)
+                return;
+
+            KControlsPanel.Visibility = Visibility.Collapsed;
+            DbscanControlsPanel.Visibility = Visibility.Collapsed;
+            DendrogramButton.Visibility = Visibility.Collapsed;
+
+            if (algorithm is KMeansAlgorithm)
+            {
+                KControlsPanel.Visibility = Visibility.Visible;
+            }
+            else if (algorithm is DBSCANAlgorithm)
+            {
+                DbscanControlsPanel.Visibility = Visibility.Visible;
+            }
+            else if (algorithm is HierarchicalClustering)
+            {
+                KControlsPanel.Visibility = Visibility.Visible;
+                DendrogramButton.Visibility = Visibility.Visible;
             }
         }
 

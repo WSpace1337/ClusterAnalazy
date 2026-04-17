@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Cluster Visualizer"
         Height="600"
-        Width="1000"
+        Width="1250"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ClusterVisualizer.Interfaces;
-using ClusterVisualizer.Algoritms;
 using ClusterVisualizer.Core.Algorithms;
 
 namespace ClusterVisualizer.Services

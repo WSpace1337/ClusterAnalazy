@@ -1,5 +1,6 @@
 ﻿using ClusterVisualizer.Core.Models;
 using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,39 @@ namespace ClusterVisualizer.Visualization {
             return model;
         }
 
+        //ESP дистанция
+        public PlotModel BuildKDistancePlot(List<double> distances, double bestEps)
+        {
+            var model = new PlotModel { Title = "DBSCAN k-distance graph" };
+
+            var lineSeries = new LineSeries
+            {
+                Title = "k-distance",
+                MarkerType = MarkerType.Circle
+            };
+
+            for (int i = 0; i < distances.Count; i++)
+            {
+                lineSeries.Points.Add(new DataPoint(i, distances[i]));
+            }
+
+            model.Series.Add(lineSeries);
+
+            var epsLine = new LineSeries
+            {
+                Title = $"Suggested eps = {bestEps:F3}",
+                StrokeThickness = 2
+            };
+
+            epsLine.Points.Add(new DataPoint(0, bestEps));
+            epsLine.Points.Add(new DataPoint(distances.Count - 1, bestEps));
+
+            model.Series.Add(epsLine);
+
+            return model;
+        }
+
+
         //Построение графика Elbow
         public PlotModel BuildElbowPlot(Dictionary<int,double> values)
         {
@@ -108,45 +142,108 @@ namespace ClusterVisualizer.Visualization {
         {
             var model = new PlotModel { Title = "Dendrogram" };
 
-            var series = new LineSeries
+            model.Axes.Add(new LinearAxis
+            {
+                Position = AxisPosition.Bottom,
+                Title = "Objects",
+                MinimumPadding = 0.02,
+                MaximumPadding = 0.02
+            });
+
+            model.Axes.Add(new LinearAxis
+            {
+                Position = AxisPosition.Left,
+                Title = "Distance",
+                Minimum = 0
+            });
+
+            var lineSeries = new LineSeries
             {
                 Color = OxyColors.Black,
-                StrokeThickness = 1
+                StrokeThickness = 1,
+                LineStyle = LineStyle.Solid
             };
 
-            int x = 0;
+            // 1. назначаем X-позиции листьям
+            var leafPositions = new Dictionary<DendrogramNode, double>();
+            int leafIndex = 0;
+            AssignLeafPositions(root, leafPositions, ref leafIndex);
 
-            DrawNode(root, ref x, series);
+            // 2. рисуем дерево рекурсивно
+            DrawDendrogramNode(root, leafPositions, lineSeries);
 
-            model.Series.Add(series);
+            model.Series.Add(lineSeries);
 
             return model;
         }
-
-        private double DrawNode(DendrogramNode node, ref int x, LineSeries series)
+        private void AssignLeafPositions(DendrogramNode node, Dictionary<DendrogramNode, double> leafPositions, ref int leafIndex)
         {
+            if (node == null)
+                return;
+
+            // Лист
             if (node.Left == null && node.Right == null)
             {
-                return x++;
+                leafPositions[node] = leafIndex;
+                leafIndex++;
+                return;
             }
 
-            double leftX = DrawNode(node.Left, ref x, series);
-            double rightX = DrawNode(node.Right, ref x, series);
+            AssignLeafPositions(node.Left, leafPositions, ref leafIndex);
+            AssignLeafPositions(node.Right, leafPositions, ref leafIndex);
+        }
 
-            double y = node.Distance;
+        private double GetNodeX(
+                    DendrogramNode node,
+                    Dictionary<DendrogramNode, double> leafPositions)
+        {
+            if (node.Left == null && node.Right == null)
+                return leafPositions[node];
 
-            // вертикали
-            series.Points.Add(new DataPoint(leftX, y));
-            series.Points.Add(new DataPoint(leftX, 0));
+            double leftX = GetNodeX(node.Left, leafPositions);
+            double rightX = GetNodeX(node.Right, leafPositions);
 
-            series.Points.Add(new DataPoint(rightX, y));
-            series.Points.Add(new DataPoint(rightX, 0));
+            return (leftX + rightX) / 2.0;
+        }
 
-            // горизонталь
-            series.Points.Add(new DataPoint(leftX, y));
-            series.Points.Add(new DataPoint(rightX, y));
+        private void DrawDendrogramNode(
+                        DendrogramNode node,
+                        Dictionary<DendrogramNode, double> leafPositions,
+                        LineSeries series)
+        {
+            if (node == null)
+                return;
 
-            return (leftX + rightX) / 2;
+            // Если лист — рисовать нечего
+            if (node.Left == null || node.Right == null)
+                return;
+
+            double leftX = GetNodeX(node.Left, leafPositions);
+            double rightX = GetNodeX(node.Right, leafPositions);
+
+            double leftY = node.Left.Distance;
+            double rightY = node.Right.Distance;
+            double currentY = node.Distance;
+
+            // Левая вертикаль
+            AddSegment(series, leftX, leftY, leftX, currentY);
+
+            // Правая вертикаль
+            AddSegment(series, rightX, rightY, rightX, currentY);
+
+            // Горизонталь соединения
+            AddSegment(series, leftX, currentY, rightX, currentY);
+
+            // Рекурсивно рисуем потомков
+            DrawDendrogramNode(node.Left, leafPositions, series);
+            DrawDendrogramNode(node.Right, leafPositions, series);
+        }
+
+        private void AddSegment(LineSeries series, double x1, double y1, double x2, double y2)
+        {
+            series.Points.Add(new DataPoint(x1, y1));
+            series.Points.Add(new DataPoint(x2, y2));
+            series.Points.Add(DataPoint.Undefined);
         }
     }
 }

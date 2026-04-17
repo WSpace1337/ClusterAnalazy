@@ -30,27 +30,67 @@
             <Button Content="🦄Find Best K (Silhouette)"
         Click="FindBestK_Click"/>
 
-            <TextBlock Text="Clusters:"
-                       VerticalAlignment="Center"
-                       Margin="10 0 5 0"/>
+            <!-- KMeans / Hierarchical -->
+            <StackPanel x:Name="KControlsPanel"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="0 0 10 0">
 
-            <TextBox x:Name="ClusterCountBox"
-                     Width="50"
-                     Text="3"/>
+                <TextBlock Text="Clusters:"
+                   VerticalAlignment="Center"
+                   Margin="10 0 5 0"/>
 
+                <TextBox x:Name="ClusterCountBox"
+                 Width="50"
+                 Text="3"/>
+            </StackPanel>
+
+            <!-- DBSCAN -->
+            <StackPanel x:Name="DbscanControlsPanel"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="0 0 10 0"
+                Visibility="Collapsed">
+
+                <TextBlock Text="eps:"
+                   VerticalAlignment="Center"
+                   Margin="10 0 5 0"/>
+
+                <TextBox x:Name="EpsBox"
+                 Width="70"
+                 Text="0.05"
+                 Margin="10 0 10 0"/>
+
+                <TextBlock Text="minPts:"
+                   VerticalAlignment="Center"
+                   Margin="10 0 5 0"/>
+
+                <TextBox x:Name="MinPtsBox"
+                 Width="50"
+                 Text="4"
+                 Margin="0 0 10 0"/>
+
+                <Button Content="Find EPS"
+                Width="100"
+                Click="FindEps_Click"/>
+            </StackPanel>
+
+            <!-- Выбор алгоритма -->
             <TextBlock Text="Algorithm:"
                VerticalAlignment="Center"
-               Margin="15 0 5 0"/>
+               Margin="10 0 5 0"/>
 
             <ComboBox x:Name="AlgorithmBox"
-              Width="150"/>
+              Width="160"
+              SelectionChanged="AlgorithmBox_SelectionChanged"/>
 
-            <Button Content="Show Dendrogram"
-        Width="150"
-        Margin="10 0"
-        Click="ShowDendrogram_Click"/>
-
-
+            <!-- Только для Hierarchical -->
+            <Button x:Name="DendrogramButton"
+            Content="Show Dendrogram"
+            Width="130"
+            Margin="15 0 0 0"
+            Click="ShowDendrogram_Click"
+            Visibility="Collapsed"/>
 
         </StackPanel>
         
