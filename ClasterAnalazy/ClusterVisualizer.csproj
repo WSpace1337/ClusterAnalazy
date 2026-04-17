@@ -97,6 +97,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Core\Algoritms\DBSCANAlgorithm.cs" />
+    <Compile Include="Core\Algoritms\HierarchicalClustering.cs" />
     <Compile Include="Core\Algoritms\KMeansAlgorithm.cs" />
     <Compile Include="Core\Interfaces\IClusteringAlgorithm.cs" />
     <Compile Include="Core\Models\ClusterResult.cs" />

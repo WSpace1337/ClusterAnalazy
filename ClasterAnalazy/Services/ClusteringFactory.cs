@@ -13,6 +13,7 @@ namespace ClusterVisualizer.Services
             {
                 new KMeansAlgorithm(),
                 new DBSCANAlgorithm(),
+                new HierarchicalClustering(),
             };
             }
     }
