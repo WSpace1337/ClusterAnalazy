@@ -61,6 +61,26 @@ namespace ClusterVisualizer.Pages
                 StatusText.Text = dialog.FileName;
             }
         }
+        private void FindBestK_Click(object sender, RoutedEventArgs e)
+        {
+            var points = DataService.Instance.Points;
+
+            if (points == null)
+            {
+                StatusText.Text = "Load data first";
+                return;
+            }
+
+            var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
+
+            var silhouetteService = new SilhouetteService();
+
+            int bestK = silhouetteService.FindBestK(points, algorithm, 10);
+
+            ClusterCountBox.Text = bestK.ToString();
+
+            StatusText.Text = $"Best K (Silhouette): {bestK}";
+        }
 
         private void RunClustering_Click(object sender, RoutedEventArgs e)
         {

@@ -123,6 +123,7 @@
     <Compile Include="Services\ElbowService.cs" />
     <Compile Include="Services\KneeDetector.cs" />
     <Compile Include="Services\SessionManager.cs" />
+    <Compile Include="Services\SilhouetteService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

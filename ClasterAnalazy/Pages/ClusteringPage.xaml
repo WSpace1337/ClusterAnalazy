@@ -26,6 +26,9 @@
                     Width="140"
                     Margin="0 0 10 0"
                     Click="RunClustering_Click"/>
+            
+            <Button Content="🦄Find Best K (Silhouette)"
+        Click="FindBestK_Click"/>
 
             <TextBlock Text="Clusters:"
                        VerticalAlignment="Center"
