@@ -74,6 +74,84 @@ namespace ClusterVisualizer.Core.Algorithms
             };
         }
 
+        public DendrogramNode BuildTree(List<PointData> points)
+        {
+            var nodes = points.Select((p, i) => new DendrogramNode
+            {
+                Id = i
+            }).ToList();
+
+            while (nodes.Count > 1)
+            {
+                double minDist = double.MaxValue;
+                int a = 0, b = 1;
+
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    for (int j = i + 1; j < nodes.Count; j++)
+                    {
+                        double dist = NodeDistance(nodes[i], nodes[j], points);
+
+                        if (dist < minDist)
+                        {
+                            minDist = dist;
+                            a = i;
+                            b = j;
+                        }
+                    }
+                }
+
+                var newNode = new DendrogramNode
+                {
+                    Left = nodes[a],
+                    Right = nodes[b],
+                    Distance = minDist
+                };
+
+                nodes[a] = newNode;
+                nodes.RemoveAt(b);
+            }
+
+            return nodes[0];
+        }
+
+        private double NodeDistance(DendrogramNode a, DendrogramNode b, List<PointData> points)
+        {
+            var pointsA = GetPoints(a, points);
+            var pointsB = GetPoints(b, points);
+
+            double minDist = double.MaxValue;
+
+            foreach (var p1 in pointsA)
+            {
+                foreach (var p2 in pointsB)
+                {
+                    double dist = Distance(p1, p2);
+
+                    if (dist < minDist)
+                        minDist = dist;
+                }
+            }
+
+            return minDist;
+        }
+
+        private List<PointData> GetPoints(DendrogramNode node, List<PointData> points)
+        {
+            if (node.Left == null && node.Right == null)
+                return new List<PointData> { points[node.Id] };
+
+            var result = new List<PointData>();
+
+            if (node.Left != null)
+                result.AddRange(GetPoints(node.Left, points));
+
+            if (node.Right != null)
+                result.AddRange(GetPoints(node.Right, points));
+
+            return result;
+        }
+
         private double ClusterDistance(List<PointData> c1, List<PointData> c2)
         {
             double maxDist = double.MinValue;

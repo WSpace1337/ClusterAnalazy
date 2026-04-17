@@ -101,6 +101,7 @@
     <Compile Include="Core\Algoritms\KMeansAlgorithm.cs" />
     <Compile Include="Core\Interfaces\IClusteringAlgorithm.cs" />
     <Compile Include="Core\Models\ClusterResult.cs" />
+    <Compile Include="Core\Models\DendrogramNode.cs" />
     <Compile Include="Core\Models\PointData.cs" />
     <Compile Include="Core\Models\users.cs" />
     <Compile Include="Data\JsonUserRepository.cs" />

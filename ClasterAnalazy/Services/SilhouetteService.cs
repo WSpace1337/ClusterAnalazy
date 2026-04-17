@@ -45,15 +45,18 @@ namespace ClusterVisualizer.Services
         }
 
         public int FindBestK(List<PointData> points,
-                     IClusteringAlgorithm algorithm,
-                     int maxK = 10)
+                             IClusteringAlgorithm algorithm,
+                             int maxK = 10,
+                             IProgress<int> progress = null)
         {
-            var bestK = 2;
-            var bestScore = double.MinValue;
+            int bestK = 2;
+            double bestScore = double.MinValue;
+
+            int totalSteps = maxK - 1;
+            int currentStep = 0;
 
             for (int k = 2; k <= maxK; k++)
             {
-                // копия данных (ВАЖНО)
                 var cloned = points.Select(p => new PointData
                 {
                     X = p.X,
@@ -69,6 +72,10 @@ namespace ClusterVisualizer.Services
                     bestScore = score;
                     bestK = k;
                 }
+
+                currentStep++;
+                int percent = currentStep * 100 / totalSteps;
+                progress?.Report(percent);
             }
 
             return bestK;

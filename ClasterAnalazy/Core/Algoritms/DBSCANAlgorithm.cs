@@ -12,7 +12,7 @@ namespace ClusterVisualizer.Algoritms
     {
         public string Name => "DBSCAN";
 
-        private double eps = 5.0;
+        private double eps = 0.05;
         private int minPts = 4;
 
         public ClusterResult Calculate(List<PointData> points, int k)

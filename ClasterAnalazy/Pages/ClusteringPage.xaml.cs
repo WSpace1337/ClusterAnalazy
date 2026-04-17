@@ -1,12 +1,17 @@
-﻿using ClusterVisualizer.Interfaces;
+﻿using ClusterVisualizer.Core.Algorithms;
+using ClusterVisualizer.Core.Models;
+using ClusterVisualizer.Interfaces;
 using ClusterVisualizer.Services;
 using ClusterVisualizer.ViewModels;
 using ClusterVisualizer.Visualization;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
 
 
 namespace ClusterVisualizer.Pages
@@ -61,7 +66,7 @@ namespace ClusterVisualizer.Pages
                 StatusText.Text = dialog.FileName;
             }
         }
-        private void FindBestK_Click(object sender, RoutedEventArgs e)
+        private async void FindBestK_Click(object sender, RoutedEventArgs e)
         {
             var points = DataService.Instance.Points;
 
@@ -73,16 +78,78 @@ namespace ClusterVisualizer.Pages
 
             var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
 
-            var silhouetteService = new SilhouetteService();
+            if (algorithm == null)
+            {
+                StatusText.Text = "Select an algorithm";
+                return;
+            }
 
-            int bestK = silhouetteService.FindBestK(points, algorithm, 10);
+            try
+            {
+                StatusText.Text = "Finding best K...";
+                ControlsPanel.IsEnabled = false;
 
-            ClusterCountBox.Text = bestK.ToString();
+                ProgressBar.Visibility = Visibility.Visible;
+                ProgressBar.IsIndeterminate = false;
+                ProgressBar.Minimum = 0;
+                ProgressBar.Maximum = 100;
+                ProgressBar.Value = 0;
 
-            StatusText.Text = $"Best K (Silhouette): {bestK}";
+                var silhouetteService = new SilhouetteService();
+
+                var clonedPoints = points.Select(p => new PointData
+                {
+                    X = p.X,
+                    Y = p.Y
+                }).ToList();
+
+                var progress = new Progress<int>(value =>
+                {
+                    ProgressBar.Value = value;
+                    StatusText.Text = $"Finding best K... {value}%";
+                });
+
+                int bestK = await Task.Run(() =>
+                {
+                    return silhouetteService.FindBestK(clonedPoints, algorithm, 10, progress);
+                });
+
+                ClusterCountBox.Text = bestK.ToString();
+                StatusText.Text = $"Best K (Silhouette): {bestK}";
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = "Error: " + ex.Message;
+            }
+            finally
+            {
+                ControlsPanel.IsEnabled = true;
+                ProgressBar.Visibility = Visibility.Collapsed;
+                ProgressBar.IsIndeterminate = true;
+                ProgressBar.Value = 0;
+            }
         }
 
-        private void RunClustering_Click(object sender, RoutedEventArgs e)
+        private void ShowDendrogram_Click(object sender, RoutedEventArgs e)
+        {
+            var points = DataService.Instance.Points;
+
+            if (points == null)
+            {
+                StatusText.Text = "Load data first";
+                return;
+            }
+
+            var hierarchical = new HierarchicalClustering();
+
+            var root = hierarchical.BuildTree(points.Take(100).ToList());
+
+            PlotView.Model = plotService.BuildDendrogram(root);
+
+            StatusText.Text = "Dendrogram built";
+        }
+
+        private async void RunClustering_Click(object sender, RoutedEventArgs e)
         {
             var points = DataService.Instance.Points;
 
@@ -94,24 +161,44 @@ namespace ClusterVisualizer.Pages
 
             if (!int.TryParse(ClusterCountBox.Text, out int k) || k <= 0)
             {
-                StatusText.Text = "Enter a valid cluster count (number >0)";
+                StatusText.Text = "Enter valid K";
                 return;
             }
 
             try
             {
-                var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
-                var result = algorithm.Calculate(viewModel.Points,k);
+                StatusText.Text = "Clustering...";
 
-                //Сохранение даных для дальлнейшей обработке 
+                ControlsPanel.IsEnabled = false;
+                ProgressBar.Visibility = Visibility.Visible;
+
+                var algorithm = AlgorithmBox.SelectedItem as IClusteringAlgorithm;
+
+                var clonedPoints = points.Select(p => new PointData
+                {
+                    X = p.X,
+                    Y = p.Y
+                }).ToList();
+
+                var result = await Task.Run(() =>
+                {
+                    return algorithm.Calculate(clonedPoints, k);
+                });
+
                 DataService.Instance.SetClusterResult(result);
 
                 PlotView.Model = plotService.BuildPlot(result);
-                StatusText.Text = $"Clustering finished: {k} clusters found.";
+
+                StatusText.Text = $"Done ({k} clusters)";
             }
             catch (Exception ex)
             {
-                StatusText.Text = "Error: " + ex.Message;
+                StatusText.Text = ex.Message;
+            }
+            finally
+            { 
+                ControlsPanel.IsEnabled = true;
+                ProgressBar.Visibility = Visibility.Collapsed;
             }
         }
 

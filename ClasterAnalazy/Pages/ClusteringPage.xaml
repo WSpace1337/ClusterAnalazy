@@ -14,7 +14,7 @@
         
 
         <!-- Панель управления -->
-        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+        <StackPanel x:Name="ControlsPanel" Orientation="Horizontal" Margin="0 0 0 10">
             
 
             <Button Content="📂 Load CSV"
@@ -45,6 +45,11 @@
             <ComboBox x:Name="AlgorithmBox"
               Width="150"/>
 
+            <Button Content="Show Dendrogram"
+        Width="150"
+        Margin="10 0"
+        Click="ShowDendrogram_Click"/>
+
 
 
         </StackPanel>
@@ -53,6 +58,13 @@
         <!-- График -->
         <oxy:PlotView x:Name="PlotView"
                       Grid.Row="1"/>
+        
+        <ProgressBar x:Name="ProgressBar"
+             Height="20"
+             Margin="5"
+             Grid.Row="2"
+             Visibility="Collapsed"
+             IsIndeterminate="True"/>
 
         <!-- Статус -->
         <TextBlock x:Name="StatusText"
@@ -61,6 +73,7 @@
                    Text="Ready"
                    FontStyle="Italic"
                    Margin="5"/>
+        
 
     </Grid>
 

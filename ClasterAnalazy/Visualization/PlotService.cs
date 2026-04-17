@@ -103,5 +103,50 @@ namespace ClusterVisualizer.Visualization {
             }
             model.Series.Add(centroidSeries);
         }
+
+        public PlotModel BuildDendrogram(DendrogramNode root)
+        {
+            var model = new PlotModel { Title = "Dendrogram" };
+
+            var series = new LineSeries
+            {
+                Color = OxyColors.Black,
+                StrokeThickness = 1
+            };
+
+            int x = 0;
+
+            DrawNode(root, ref x, series);
+
+            model.Series.Add(series);
+
+            return model;
+        }
+
+        private double DrawNode(DendrogramNode node, ref int x, LineSeries series)
+        {
+            if (node.Left == null && node.Right == null)
+            {
+                return x++;
+            }
+
+            double leftX = DrawNode(node.Left, ref x, series);
+            double rightX = DrawNode(node.Right, ref x, series);
+
+            double y = node.Distance;
+
+            // вертикали
+            series.Points.Add(new DataPoint(leftX, y));
+            series.Points.Add(new DataPoint(leftX, 0));
+
+            series.Points.Add(new DataPoint(rightX, y));
+            series.Points.Add(new DataPoint(rightX, 0));
+
+            // горизонталь
+            series.Points.Add(new DataPoint(leftX, y));
+            series.Points.Add(new DataPoint(rightX, y));
+
+            return (leftX + rightX) / 2;
+        }
     }
 }
