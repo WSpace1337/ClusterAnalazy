@@ -5,6 +5,7 @@ using ClusterVisualizer.Visualization;
 using ClusterVisualizer.Services;
 using ClusterVisualizer.Core.Models;
 using ClusterVisualizer.Pages;
+using System.Windows.Controls;
 
 
 
@@ -23,29 +24,60 @@ namespace ClusterVisualizer.Views
             viewModel = new MainViewModel();
             plotService = new PlotService();
 
-            MainFrame.Navigate(new ClusteringPage());
+            MainFrame.Navigate(new DashboardPage());
+            SetActiveMenu(DashboardButton);
 
         }
 
         private void Clustering_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new ClusteringPage());
+            SetActiveMenu(ClusteringButton);
         }
 
         private void Elbow_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new ElbowPage());
+            SetActiveMenu(ElbowButton);
+        }
+        private void Dashboard_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new DashboardPage());
+            SetActiveMenu(DashboardButton);
+        }
+
+        private void Prediction_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new PredictionPage());
+            SetActiveMenu(PredictionButton);
+        }
+
+        private void Setting_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new SettingsPage());
+            SetActiveMenu(SettingsButton);
         }
 
         private void Users_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new UsersPage());
+            SetActiveMenu(UsersMenu);
         }
 
-        private void Setting_Click(object sender, RoutedEventArgs e)
+        private void SetActiveMenu(Button activeButton)
         {
-            MainFrame.Navigate(new SettingPage());
+            DashboardButton.Background = System.Windows.Media.Brushes.Transparent;
+            ClusteringButton.Background = System.Windows.Media.Brushes.Transparent;
+            ElbowButton.Background = System.Windows.Media.Brushes.Transparent;
+            PredictionButton.Background = System.Windows.Media.Brushes.Transparent;
+            SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
+            UsersMenu.Background = System.Windows.Media.Brushes.Transparent;
+
+            activeButton.Background = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(37, 99, 235)
+            );
         }
+
 
         private void Window_Loaded()
         {

@@ -24,8 +24,8 @@ namespace ClusterVisualizer.Services
 
                 points.Add(new PointData
                 {
-                    X = age/100.0,
-                    Y = income/100.0,
+                    X = age,
+                    Y = income,
                 });
 
             }

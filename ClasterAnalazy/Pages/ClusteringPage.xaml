@@ -4,116 +4,181 @@
       xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
       Title="ClusteringPage">
 
-    <Grid Margin="10">
+    <Grid Margin="10" Background="#F1F5F9">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="480"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Панель управления -->
-        <StackPanel x:Name="ControlsPanel" Orientation="Horizontal" Margin="0 0 0 10">
-            
+        <!-- Основная часть -->
+        <Grid Grid.Column="0" Margin="0 0 10 0">
 
-            <Button Content="📂 Load CSV"
-                    Width="120"
-                    Margin="0 0 10 0"
-                    Click="LoadData_Click"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <Button Content="⚙ Run Clustering"
-                    Width="140"
-                    Margin="0 0 10 0"
-                    Click="RunClustering_Click"/>
-            
-            <Button Content="🦄Find Best K (Silhouette)"
-        Click="FindBestK_Click"/>
+            <!-- Карточка панели управления -->
+            <Border Grid.Row="0"
+                    Background="White"
+                    CornerRadius="12"
+                    Padding="12"
+                    Margin="0 0 0 10"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1">
 
-            <!-- KMeans / Hierarchical -->
-            <StackPanel x:Name="KControlsPanel"
-                Orientation="Horizontal"
-                VerticalAlignment="Center"
-                Margin="0 0 10 0">
+                <StackPanel x:Name="ControlsPanel"
+                            Orientation="Horizontal">
 
-                <TextBlock Text="Clusters:"
-                   VerticalAlignment="Center"
-                   Margin="10 0 5 0"/>
+                    <Button Content="📂 Load CSV"
+                            Width="120"
+                            Margin="0 0 10 0"
+                            Click="LoadData_Click"/>
 
-                <TextBox x:Name="ClusterCountBox"
-                 Width="50"
-                 Text="3"/>
-            </StackPanel>
+                    <Button Content="⚙ Run Clustering"
+                            Width="140"
+                            Margin="0 0 10 0"
+                            Click="RunClustering_Click"/>
 
-            <!-- DBSCAN -->
-            <StackPanel x:Name="DbscanControlsPanel"
-                Orientation="Horizontal"
-                VerticalAlignment="Center"
-                Margin="0 0 10 0"
-                Visibility="Collapsed">
+                    <Button Content="🦄Find Best K (Silhouette)"
+                            Click="FindBestK_Click"/>
 
-                <TextBlock Text="eps:"
-                   VerticalAlignment="Center"
-                   Margin="10 0 5 0"/>
+                    <StackPanel x:Name="KControlsPanel"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0 0 10 0">
 
-                <TextBox x:Name="EpsBox"
-                 Width="70"
-                 Text="0.05"
-                 Margin="10 0 10 0"/>
+                        <TextBlock Text="Clusters:"
+                                   VerticalAlignment="Center"
+                                   Margin="10 0 5 0"/>
 
-                <TextBlock Text="minPts:"
-                   VerticalAlignment="Center"
-                   Margin="10 0 5 0"/>
+                        <TextBox x:Name="ClusterCountBox"
+                                 Width="50"
+                                 Text="3"/>
+                    </StackPanel>
 
-                <TextBox x:Name="MinPtsBox"
-                 Width="50"
-                 Text="4"
-                 Margin="0 0 10 0"/>
+                    <StackPanel x:Name="DbscanControlsPanel"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0 0 10 0"
+                                Visibility="Collapsed">
 
-                <Button Content="Find EPS"
-                Width="100"
-                Click="FindEps_Click"/>
-            </StackPanel>
+                        <TextBlock Text="eps:"
+                                   VerticalAlignment="Center"
+                                   Margin="10 0 5 0"/>
 
-            <!-- Выбор алгоритма -->
-            <TextBlock Text="Algorithm:"
-               VerticalAlignment="Center"
-               Margin="10 0 5 0"/>
+                        <TextBox x:Name="EpsBox"
+                                 Width="70"
+                                 Text="0.05"
+                                 Margin="10 0 10 0"/>
 
-            <ComboBox x:Name="AlgorithmBox"
-              Width="160"
-              SelectionChanged="AlgorithmBox_SelectionChanged"/>
+                        <TextBlock Text="minPts:"
+                                   VerticalAlignment="Center"
+                                   Margin="10 0 5 0"/>
 
-            <!-- Только для Hierarchical -->
-            <Button x:Name="DendrogramButton"
-            Content="Show Dendrogram"
-            Width="130"
-            Margin="15 0 0 0"
-            Click="ShowDendrogram_Click"
-            Visibility="Collapsed"/>
+                        <TextBox x:Name="MinPtsBox"
+                                 Width="50"
+                                 Text="4"
+                                 Margin="0 0 10 0"/>
 
-        </StackPanel>
-        
+                        <Button Content="Find EPS"
+                                Width="100"
+                                Click="FindEps_Click"/>
+                    </StackPanel>
 
-        <!-- График -->
-        <oxy:PlotView x:Name="PlotView"
-                      Grid.Row="1"/>
-        
-        <ProgressBar x:Name="ProgressBar"
-             Height="20"
-             Margin="5"
-             Grid.Row="2"
-             Visibility="Collapsed"
-             IsIndeterminate="True"/>
+                    <TextBlock Text="Algorithm:"
+                               VerticalAlignment="Center"
+                               Margin="10 0 5 0"/>
 
-        <!-- Статус -->
-        <TextBlock x:Name="StatusText"
-                   FontSize="16"
-                   Grid.Row="2"
-                   Text="Ready"
-                   FontStyle="Italic"
-                   Margin="5"/>
-        
+                    <ComboBox x:Name="AlgorithmBox"
+                              Width="160"
+                              SelectionChanged="AlgorithmBox_SelectionChanged"/>
+
+                    <Button x:Name="DendrogramButton"
+                            Content="Show Dendrogram"
+                            Width="130"
+                            Margin="15 0 0 0"
+                            Click="ShowDendrogram_Click"
+                            Visibility="Collapsed"/>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- Карточка графика -->
+            <Border Grid.Row="1"
+                    Background="White"
+                    CornerRadius="12"
+                    Padding="10"
+                    Margin="0 0 0 10"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1">
+
+                <oxy:PlotView x:Name="PlotView"/>
+
+            </Border>
+
+            <!-- Нижняя панель -->
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ProgressBar x:Name="ProgressBar"
+                             Height="20"
+                             Margin="5"
+                             Grid.Row="0"
+                             Visibility="Collapsed"
+                             IsIndeterminate="True"/>
+
+                <TextBlock x:Name="StatusText"
+                           FontSize="16"
+                           Grid.Row="1"
+                           Text="Ready"
+                           FontStyle="Italic"
+                           Margin="5"/>
+            </Grid>
+
+        </Grid>
+
+        <!-- Карточка логов справа -->
+        <Border Grid.Column="1"
+                Background="White"
+                CornerRadius="12"
+                Padding="12"
+                Margin="10 0 0 0"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Logs"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 10"/>
+
+                <TextBox x:Name="LogBox"
+                         Grid.Row="1"
+                         Margin="0"
+                         IsReadOnly="True"
+                         TextWrapping="NoWrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         Background="#F8FAFC"
+                         BorderBrush="#E2E8F0"
+                         BorderThickness="1"/>
+            </Grid>
+
+        </Border>
 
     </Grid>
 

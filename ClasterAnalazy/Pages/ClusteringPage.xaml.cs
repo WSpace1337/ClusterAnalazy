@@ -11,6 +11,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Globalization;
+using System.IO;
+
+
+
 
 
 
@@ -26,12 +31,14 @@ namespace ClusterVisualizer.Pages
            
             InitializeComponent();
 
+            RefreshLogs();
+
             algorithms = ClusteringFactory.GetAlgorithms();
 
             AlgorithmBox.ItemsSource = algorithms;
             AlgorithmBox.DisplayMemberPath = "Name";
 
-            AlgorithmBox.SelectedIndex = 0;
+    
 
             viewModel = new MainViewModel();
             plotService = new PlotService();
@@ -39,16 +46,32 @@ namespace ClusterVisualizer.Pages
             this.DataContext = viewModel;
 
             UpdateAlgorithmUI();
+
+            AppSettings.Load();
+
+
+            AlgorithmBox.SelectedIndex = AppSettings.DefaultAlgorithmIndex;
+            EpsBox.Text = AppSettings.DefaultEps.ToString();
+            MinPtsBox.Text = AppSettings.DefaultMinPts.ToString();
             
+
             //проверка на подгруженость даных, если загружены,
             //то работа идет с этим файлом
             if (DataService.Instance.Points != null )
             {
                 viewModel.Points = DataService.Instance.Points;
+
+
                 StatusText.Text = $"Dataset loaded: {viewModel.Points.Count} points";
             }
 
+            if (DataService.Instance.ClusterResult != null)
+            {
+                PlotView.Model = plotService.BuildPlot(DataService.Instance.ClusterResult);
+            }
+
         }
+
 
         private List<IClusteringAlgorithm> algorithms;
         private MainViewModel viewModel;
@@ -66,8 +89,48 @@ namespace ClusterVisualizer.Pages
                 DataService.Instance.Points = viewModel.Points;
 
                 StatusText.Text = dialog.FileName;
+
+                AddLog($"Dataset loaded: {dialog.FileName}");
+                LogTablePreview(dialog.FileName);
             }
         }
+
+        private void LogTablePreview(string path)
+        {
+            var lines = File.ReadLines(path)
+                .Take(AppSettings.MaxPreviewRows + 1)
+                .ToList();
+
+            if (lines.Count <= 1)
+            {
+                AddLog("CSV is empty.");
+                return;
+            }
+
+            AddLog("Table preview:", false);
+            AddLog("------------------------------------------------------------", false);
+            AddLog($"{"Id",-8} {"Age",-6} {"Income",-8} {"Debt",-8} {"Address",-10}", false);
+            AddLog("------------------------------------------------------------", false);
+
+            foreach (var line in lines.Skip(1))
+            {
+                var parts = line.Split(',');
+
+                if (parts.Length < 9)
+                    continue;
+
+                string id = parts[0];
+                string age = parts[1];
+                string income = parts[4];
+                string debt = parts[7];
+                string address = parts[8];
+
+                AddLog($"{id,-8} {age,-6} {income,-8} {debt,-8} {address,-10}", false);
+            }
+
+            AddLog("------------------------------------------------------------\n", false);
+        }
+
         private async void FindBestK_Click(object sender, RoutedEventArgs e)
         {
             var points = DataService.Instance.Points;
@@ -111,9 +174,17 @@ namespace ClusterVisualizer.Pages
                     StatusText.Text = $"Finding best K... {value}%";
                 });
 
+                Action<string> logger = message =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        AddLog(message);
+                    });
+                };
+
                 int bestK = await Task.Run(() =>
                 {
-                    return silhouetteService.FindBestK(clonedPoints, algorithm, 10, progress);
+                    return silhouetteService.FindBestK( points, algorithm, 10, progress, logger);
                 });
 
                 ClusterCountBox.Text = bestK.ToString();
@@ -130,6 +201,21 @@ namespace ClusterVisualizer.Pages
                 ProgressBar.IsIndeterminate = true;
                 ProgressBar.Value = 0;
             }
+        }
+
+        private void AddLog(string message, bool withTime = true)
+        {
+            if (withTime)
+            {
+                string time = DateTime.Now.ToString("HH:mm:ss");
+                DataService.Instance.Logs.Add($"[{time}] {message}");
+            }
+            else
+            {
+                DataService.Instance.Logs.Add(message);
+            }
+
+            RefreshLogs();
         }
 
         //денденограмма 
@@ -202,6 +288,7 @@ namespace ClusterVisualizer.Pages
                 StatusText.Text = "Clustering...";
 
                 string epsText = EpsBox.Text;
+                EpsBox.Text = AppSettings.DefaultEps.ToString();
                 string minPtsText = MinPtsBox.Text;
                 string clusterCountText = ClusterCountBox.Text;
 
@@ -211,12 +298,24 @@ namespace ClusterVisualizer.Pages
                     Y = p.Y
                 }).ToList();
 
+                Action<string> logger = message =>
+                {
+                    Dispatcher.Invoke(() => AddLog(message));
+                };
                 ClusterResult result = await Task.Run(() =>
                 {
                     if (selectedAlgorithm is DBSCANAlgorithm)
                     {
-                        if (!double.TryParse(epsText, out double eps) || eps <= 0)
+                        epsText = epsText.Replace(',', '.');
+
+                        if (!double.TryParse(
+                                epsText,
+                                NumberStyles.Float,
+                                CultureInfo.InvariantCulture,
+                                out double eps) || eps <= 0)
+                        {
                             throw new Exception("Invalid eps value");
+                        }
 
                         if (!int.TryParse(minPtsText, out int minPts) || minPts <= 0)
                             throw new Exception("Invalid minPts value");
@@ -229,13 +328,42 @@ namespace ClusterVisualizer.Pages
                         if (!int.TryParse(clusterCountText, out int k) || k <= 0)
                             throw new Exception("Invalid cluster count");
 
-                        return selectedAlgorithm.Calculate(clonedPoints, k);
+                        return selectedAlgorithm.Calculate(clonedPoints, k, logger);
                     }
                 });
 
                 DataService.Instance.SetClusterResult(result);
-                PlotView.Model = plotService.BuildPlot(result);
+
+                var mlService = new MlTrainingService();
+
+
+                var modelPlot = plotService.BuildPlot(result);
+
+                PlotView.Model = modelPlot;
+
+                DataService.Instance.SetClusterResult(result);
+
                 StatusText.Text = $"Done ({result.ClusterCount} clusters)";
+
+                int classCount = result.Points
+                                            .Where(p => p.ClusterId >= 0)
+                                            .Select(p => p.ClusterId)
+                                            .Distinct()
+                                            .Count();
+
+                if (classCount < 2)
+                {
+                    AddLog("ML training skipped.");
+                    AddLog("Reason: less than 2 clusters were found.");
+                    AddLog("DBSCAN may produce 1 cluster + noise.");
+                    return;
+                }
+                var model = mlService.Train(
+                    result.Points,
+                    MlAlgorithmType.GradientBoosting
+                );
+
+                DataService.Instance.SetMlModel(model);
             }
             catch (Exception ex)
             {
@@ -287,7 +415,7 @@ namespace ClusterVisualizer.Pages
                 });
 
                 PlotView.Model = plotService.BuildKDistancePlot(result.Distances, result.Eps);
-                EpsBox.Text = result.Eps.ToString("F3");
+                EpsBox.Text = result.Eps.ToString("F3", CultureInfo.InvariantCulture);
                 StatusText.Text = $"Suggested eps = {result.Eps:F3}";
             }
             catch (Exception ex)
@@ -331,5 +459,10 @@ namespace ClusterVisualizer.Pages
             }
         }
 
+        private void RefreshLogs()
+        {
+            LogBox.Text = string.Join(Environment.NewLine, DataService.Instance.Logs);
+            LogBox.ScrollToEnd();
+        }
     }
 }

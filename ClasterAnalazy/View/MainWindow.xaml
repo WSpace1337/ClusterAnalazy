@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Cluster Visualizer"
         Height="600"
-        Width="1250"
+        Width="1729"
+        ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -17,6 +18,7 @@
             <Setter Property="Margin" Value="5"/>
         </Style>
     </Window.Resources>
+    
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,25 +38,40 @@
 
                 <Separator Margin="5"/>
 
-                <Button Content="Clustering"
+
+                <Button x:Name="DashboardButton"
+                    Content="Dashboard"
+                    Click="Dashboard_Click"
+                    Style="{StaticResource SidebarButton}"/>
+
+                <Button x:Name="ClusteringButton"
+                        Content="Clustering"
                         Click="Clustering_Click"
                         Style="{StaticResource SidebarButton}"/>
 
-                <Button Content="Elbow Method"
+                <Button x:Name="ElbowButton"
+                        Content="Elbow Method"
                         Click="Elbow_Click"
                         Style="{StaticResource SidebarButton}"/>
 
+                <Button x:Name="PredictionButton"
+                        Content="Prediction"
+                        Click="Prediction_Click"
+                        Style="{StaticResource SidebarButton}"/>
+                
                 <Button x:Name="UsersMenu"
                         Content="Users"
                         Click="Users_Click"
                         Style="{StaticResource SidebarButton}"/>
-                <Button x:Name="SettingMenu"
+
+                <Button x:Name="SettingsButton"
                         Content="Setting"
                         Click="Setting_Click"
                         Style="{StaticResource SidebarButton}"/>
                 <TextBlock x:Name="UserInfo"
                            DockPanel.Dock="Left"
                            Foreground="White"/>
+                
             </StackPanel>
         </Border>
 

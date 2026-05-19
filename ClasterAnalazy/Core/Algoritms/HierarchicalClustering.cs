@@ -10,8 +10,10 @@ namespace ClusterVisualizer.Core.Algorithms
     {
         public string Name => "Hierarchical (Agglomerative)";
 
-        public ClusterResult Calculate(List<PointData> points, int k)
+        public ClusterResult Calculate(List<PointData> points, int k, Action<string> log = null)
         {
+
+            log?.Invoke($"Hierarchical clustering started. Points: {points.Count}, Target K = {k}");
 
             var clusters = new List<List<PointData>>();
 
@@ -20,6 +22,7 @@ namespace ClusterVisualizer.Core.Algorithms
                 clusters.Add(new List<PointData> { p });
             }
 
+            int mergeStep = 0;
 
             while (clusters.Count > k)
             {
@@ -42,7 +45,14 @@ namespace ClusterVisualizer.Core.Algorithms
                     }
                 }
 
+                mergeStep++;
 
+                if (mergeStep <= 10 || mergeStep % 10 == 0 || clusters.Count == k + 1)
+                {
+                    log?.Invoke(
+                        $"Step {mergeStep}: merging clusters {clusterA} and {clusterB}, " +
+                        $"distance={minDistance:F4}, remaining={clusters.Count - 1}");
+                }
                 clusters[clusterA].AddRange(clusters[clusterB]);
                 clusters.RemoveAt(clusterB);
             }
@@ -65,6 +75,13 @@ namespace ClusterVisualizer.Core.Algorithms
                     Y = cluster.Average(p => p.Y)
                 });
             }
+
+            for (int i = 0; i < clusters.Count; i++)
+            {
+                log?.Invoke($"Cluster {i}: {clusters[i].Count} points");
+            }
+
+            log?.Invoke($"Hierarchical clustering finished. Clusters = {clusters.Count}");
 
             return new ClusterResult
             {

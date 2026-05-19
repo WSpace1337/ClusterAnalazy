@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ClusterVisualizer.Core.Models;
 
 namespace ClusterVisualizer.Interfaces
@@ -7,6 +8,6 @@ namespace ClusterVisualizer.Interfaces
     {
         string Name { get; }
 
-        ClusterResult Calculate(List<PointData> points, int k);
+        ClusterResult Calculate(List<PointData> points, int k, Action<string> log = null);
     }
 }

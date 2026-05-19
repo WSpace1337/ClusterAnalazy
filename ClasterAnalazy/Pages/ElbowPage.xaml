@@ -3,47 +3,111 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf">
 
-    <Grid Margin="10">
+    <Grid Margin="10" Background="#F1F5F9">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="480"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Панель управления -->
+        <!-- Левая часть -->
+        <Grid Grid.Column="0" Margin="0 0 10 0">
 
-        
-        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-            
-            <TextBlock Text="Max K:"
-                       VerticalAlignment="Center"
-                       Margin="10 0 5 0"/>
-            
-            <TextBox x:Name="MaxKBox"
-                     Width="50"
-                     Text="10"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
+            <!-- Карточка управления -->
+            <Border Grid.Row="0"
+                    Background="White"
+                    CornerRadius="12"
+                    Padding="12"
+                    Margin="0 0 0 10"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1">
 
-            <Button Content="Calculate Elbow"
-                    Width="150"
-                    Margin="10 0"
-                    Click="CalculateElbow_Click"/>
+                <StackPanel x:Name="ControlsPanel"
+                            Orientation="Horizontal">
 
-        </StackPanel>
+                    <TextBlock Text="Max K:"
+                               VerticalAlignment="Center"
+                               Margin="0 0 5 0"/>
 
-        <!-- График -->
-        <oxy:PlotView x:Name="PlotView"
-                      Grid.Row="1"/>
+                    <TextBox x:Name="MaxKBox"
+                             Width="60"
+                             Text="10"
+                             Margin="0 0 10 0"/>
 
-        <!-- Статус -->
-        <TextBlock x:Name="StatusText"
-                   Grid.Row="2"
-                   FontSize="16"
-                   Text="Ready"
-                   Margin="5"
-                   FontStyle="Italic"/>
+                    <Button Content="Calculate Elbow"
+                            Width="150"
+                            Click="CalculateElbow_Click"/>
+
+                </StackPanel>
+            </Border>
+
+            <ProgressBar x:Name="ProgressBar"
+                         Grid.Row="1"
+                         Height="18"
+                         Visibility="Collapsed"
+                         IsIndeterminate="True"
+                         Margin="0 0 0 10"/>
+
+            <!-- Карточка графика -->
+            <Border Grid.Row="2"
+                    Background="White"
+                    CornerRadius="12"
+                    Padding="10"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1">
+
+                <oxy:PlotView x:Name="PlotView"/>
+
+            </Border>
+
+            <TextBlock x:Name="StatusText"
+                       Grid.Row="3"
+                       FontSize="16"
+                       Text="Ready"
+                       Margin="5"
+                       FontStyle="Italic"/>
+        </Grid>
+
+        <!-- Карточка логов -->
+        <Border Grid.Column="1"
+                Background="White"
+                CornerRadius="12"
+                Padding="12"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Logs"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 10"/>
+
+                <TextBox x:Name="LogBox"
+                         Grid.Row="1"
+                         IsReadOnly="True"
+                         TextWrapping="NoWrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         Background="#F8FAFC"
+                         BorderBrush="#E2E8F0"
+                         BorderThickness="1"/>
+            </Grid>
+
+        </Border>
 
     </Grid>
-
 </Page>

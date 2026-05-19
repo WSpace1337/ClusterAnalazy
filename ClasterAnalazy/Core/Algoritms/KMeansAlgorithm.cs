@@ -10,14 +10,17 @@ namespace ClusterVisualizer.Core.Algorithms
     public class KMeansAlgorithm : IClusteringAlgorithm
     {
         public string Name => "K-means";
-        public ClusterResult Calculate(List<PointData> points, int k)
+        public ClusterResult Calculate(List<PointData> points, int k, Action<string> log = null)
         {
+            log?.Invoke($"K-Means started. Points: {points.Count}, K: {k}");
             Random rand = new Random();
             var centroids = points
                 .OrderBy (x => rand.Next())
                 .Take (k)
                 .Select (p  => new PointData { X = p.X, Y= p.Y})
                 .ToList();
+
+            log?.Invoke("Initial centroids selected.");
 
             bool changed = true;
             int maxInterations = 100;
@@ -27,6 +30,7 @@ namespace ClusterVisualizer.Core.Algorithms
             {
                 changed = false;
                 iteration++;
+                log?.Invoke($"Iteration {iteration} started.");
 
                 foreach (var point in points) 
                 {
@@ -60,6 +64,17 @@ namespace ClusterVisualizer.Core.Algorithms
                     centroids[i].Y = clusterPoints.Average(p => p.Y);
                 }
             }
+
+            for (int i = 0; i < k; i++)
+            {
+                int count = points.Count(p => p.ClusterId == i);
+
+                log?.Invoke(
+                    $"Iteration {iteration}: Cluster {i} = {count} points, " +
+                    $"Centroid=({centroids[i].X:F4}, {centroids[i].Y:F4})");
+            }
+
+            log?.Invoke($"K-Means finished after {iteration} iterations.");
 
             return new ClusterResult
             {

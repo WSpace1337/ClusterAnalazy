@@ -1,0 +1,133 @@
+﻿<Page x:Class="ClusterVisualizer.Pages.PredictionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="10" Background="#F1F5F9">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="380"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Карточка формы -->
+        <Border Grid.Column="0"
+                Background="White"
+                CornerRadius="12"
+                Padding="20"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+
+            <StackPanel Width="330"
+                        HorizontalAlignment="Left">
+
+                <TextBlock Text="Client Segment Prediction"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Margin="0 0 0 25"/>
+
+                <TextBlock Text="Age"/>
+                <TextBox x:Name="AgeBox"
+                         Height="30"
+                         Margin="0 5 0 15"/>
+
+                <TextBlock Text="Income"/>
+                <TextBox x:Name="IncomeBox"
+                         Height="30"
+                         Margin="0 5 0 15"/>
+
+                <TextBlock Text="ML Algorithm"/>
+                <ComboBox x:Name="MlAlgorithmBox"
+                          Height="30"
+                          Margin="0 5 0 20"/>
+
+                <Button Content="Train Model"
+                        Height="35"
+                        Margin="0 0 0 10"
+                        Click="TrainModel_Click"/>
+
+                <Button Content="Load Saved Model"
+                        Height="35"
+                        Margin="0 0 0 10"
+                        Click="LoadSavedModel_Click"/>
+
+                <Button Content="Predict Segment"
+                        Height="35"
+                        Click="Predict_Click"/>
+
+                <TextBlock x:Name="ResultText"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0 25 0 0"
+                           TextWrapping="Wrap"/>
+
+                <TextBlock x:Name="StatusText"
+                           FontSize="16"
+                           Foreground="Gray"
+                           Margin="0 10 0 0"
+                           TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+        </Border>
+
+        <!-- Карточка логов -->
+        <Border Grid.Column="1"
+                Background="White"
+                CornerRadius="12"
+                Padding="12"
+                Margin="20 0 0 0"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Logs"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 10"/>
+
+                <TextBox x:Name="LogBox"
+                         Grid.Row="1"
+                         IsReadOnly="True"
+                         TextWrapping="NoWrap"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto"
+                         FontFamily="Consolas"
+                         FontSize="12"
+                         Background="#F8FAFC"
+                         BorderBrush="#E2E8F0"
+                         BorderThickness="1"/>
+
+            </Grid>
+
+        </Border>
+
+        <Grid x:Name="LoadingOverlay"
+      Grid.ColumnSpan="2"
+      Background="#80000000"
+      Visibility="Collapsed">
+
+            <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+                <TextBlock Text="Processing..."
+                   Foreground="White"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0 0 0 15"/>
+
+                <ProgressBar Width="220"
+                     Height="18"
+                     IsIndeterminate="True"/>
+
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+
+</Page>

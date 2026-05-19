@@ -45,9 +45,10 @@ namespace ClusterVisualizer.Services
         }
 
         public int FindBestK(List<PointData> points,
-                             IClusteringAlgorithm algorithm,
-                             int maxK = 10,
-                             IProgress<int> progress = null)
+                      IClusteringAlgorithm algorithm,
+                      int maxK = 10,
+                      IProgress<int> progress = null,
+                      Action<string> log = null)
         {
             int bestK = 2;
             double bestScore = double.MinValue;
@@ -55,8 +56,14 @@ namespace ClusterVisualizer.Services
             int totalSteps = maxK - 1;
             int currentStep = 0;
 
+            log?.Invoke($"Silhouette search started. MaxK = {maxK}");
+            log?.Invoke($"Algorithm: {algorithm.Name}");
+            log?.Invoke($"Dataset size: {points.Count} points");
+
             for (int k = 2; k <= maxK; k++)
             {
+                log?.Invoke($"Calculating silhouette for K = {k}");
+
                 var cloned = points.Select(p => new PointData
                 {
                     X = p.X,
@@ -67,10 +74,14 @@ namespace ClusterVisualizer.Services
 
                 double score = CalculateScore(result.Points);
 
+                log?.Invoke($"K = {k}, Silhouette score = {score:F4}");
+
                 if (score > bestScore)
                 {
                     bestScore = score;
                     bestK = k;
+
+                    log?.Invoke($"New best K found: {bestK}, score = {bestScore:F4}");
                 }
 
                 currentStep++;
@@ -78,15 +89,18 @@ namespace ClusterVisualizer.Services
                 progress?.Report(percent);
             }
 
+            log?.Invoke($"Silhouette search finished. Best K = {bestK}");
+            log?.Invoke($"Best score = {bestScore:F4}");
+
             return bestK;
         }
 
         private double Distance(PointData a, PointData b)
         {
-            return Math.Sqrt(
-                Math.Pow(a.X - b.X, 2) +
-                Math.Pow(a.Y - b.Y, 2)
-            );
+            double dx = a.X - b.X;
+            double dy = a.Y - b.Y;
+
+            return Math.Sqrt(dx * dx + dy * dy);
         }
     }
 }

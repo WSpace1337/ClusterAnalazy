@@ -20,8 +20,10 @@ namespace ClusterVisualizer.Core.Algorithms
             this.minPts = minPts;
         }
 
-        public ClusterResult Calculate(List<PointData> points, int k)
+        public ClusterResult Calculate(List<PointData> points, int k, Action<string> log = null)
         {
+            log?.Invoke($"DBSCAN started. eps = {eps}, minPts = {minPts}");
+
             int clusterId = 0;
 
             foreach (var point in points)
@@ -37,12 +39,18 @@ namespace ClusterVisualizer.Core.Algorithms
                 if (neighbors.Count < minPts)
                 {
                     point.ClusterId = -2;
+                    log?.Invoke($"Point marked as noise. Neighbors: {neighbors.Count}");
                     continue;
                 }
 
                 ExpandCluster(point, neighbors, clusterId, points);
+                int clusterSize = points.Count(p => p.ClusterId == clusterId);
+                log?.Invoke($"Cluster {clusterId} created. Size = {clusterSize}");
                 clusterId++;
             }
+
+            int noise = points.Count(p => p.ClusterId == -2);
+            log?.Invoke($"DBSCAN finished. Clusters = {clusterId}, Noise = {noise}");
 
             return new ClusterResult
             {

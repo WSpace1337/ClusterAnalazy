@@ -29,10 +29,11 @@ namespace ClusterVisualizer.ViewModels
             double minY = points.Min(p => p.Y);
             double maxY = points.Max(p => p.Y);
 
+            DataService.Instance.SetNormalizationParams(minX, maxX, minY, maxY);
+
             double rangeX = maxX - minX;
             double rangeY = maxY - minY;
-            
-            
+
             foreach (var p in points)
             {
                 p.OriginalX = p.X;
@@ -47,7 +48,10 @@ namespace ClusterVisualizer.ViewModels
         {
             Points = loader.Load(path);
 
-            Normalize(Points);
+            if (AppSettings.NormalizeData)
+            {
+                Normalize(Points);
+            }
         }
 
         public ClusterResult RunClustering(int k)

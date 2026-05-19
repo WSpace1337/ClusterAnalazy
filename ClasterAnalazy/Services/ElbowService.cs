@@ -11,20 +11,35 @@ namespace ClusterVisualizer.Services
 {
     public class ElbowService
     {
-        public Dictionary<int,double> Calculate(List<PointData>points, int maxK)
+        public Dictionary<int, double> Calculate(List<PointData> points, int maxK, Action<string> log = null)
         {
-            var result = new Dictionary<int,double>();
+            var result = new Dictionary<int, double>();
 
-            for (int k = 1; k < maxK; k++)
+            log?.Invoke($"Elbow Method started. MaxK = {maxK}");
+            log?.Invoke($"Dataset size: {points.Count} points");
+
+            for (int k = 1; k <= maxK; k++)
             {
-                var algoritm = new KMeansAlgorithm();
+                log?.Invoke($"Calculating K-Means for k = {k}");
 
-                var clusterResult = algoritm.Calculate(points, k);
+                var clonedPoints = points.Select(p => new PointData
+                {
+                    X = p.X,
+                    Y = p.Y
+                }).ToList();
+
+                var algorithm = new KMeansAlgorithm();
+
+                var clusterResult = algorithm.Calculate(clonedPoints, k);
 
                 double sse = CalculateSSE(clusterResult);
 
                 result.Add(k, sse);
+
+                log?.Invoke($"k = {k}, SSE = {sse:F4}");
             }
+
+            log?.Invoke("Elbow Method finished.");
 
             return result;
         }
@@ -44,6 +59,7 @@ namespace ClusterVisualizer.Services
 
                 sum += dx * dx + dy * dy;
             }
+
             return sum;
         }
     }

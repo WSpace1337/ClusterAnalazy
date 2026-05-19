@@ -35,10 +35,16 @@ namespace ClusterVisualizer.Pages
                 StatusText.Text = $"Dataset loaded: {viewModel.Points.Count} points";
             }
 
+            if (DataService.Instance.ElbowValues != null)
+            {
+                PlotView.Model = plotService.BuildElbowPlot(DataService.Instance.ElbowValues);
+            }
+
+            RefreshLogs();
             this.DataContext= viewModel;
         }
 
-        private void CalculateElbow_Click(object sender, RoutedEventArgs e)
+        private async void CalculateElbow_Click(object sender, RoutedEventArgs e)
         {
             var points = DataService.Instance.Points;
 
@@ -58,22 +64,50 @@ namespace ClusterVisualizer.Pages
             {
                 var elbowService = new ElbowService();
 
-                var values = elbowService.Calculate(points, maxK);
+                Action<string> logger = message =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        AddLog(message);
+                    });
+                };
+
+                var values = await Task.Run(() =>
+                {
+                    return elbowService.Calculate(points, 10, logger);
+                });
 
                 var kneeDetector = new KneeDetector();
 
                 int optimalK = kneeDetector.FindOptimalK(values);
 
+                AddLog($"Optimal K detected: {optimalK}");
+
                 //Сохранеие значения SSE и "локтя" (оптимальное количество кластеров)
-                DataService.Instance.SetElbowResult(values.Values.ToList(), optimalK);
+                DataService.Instance.SetElbowResult(values, optimalK);
+
 
                 PlotView.Model = plotService.BuildElbowPlot(values);
+                DataService.Instance.SetElbowResult(values, optimalK);
+
                 StatusText.Text = $"Optimal K = {optimalK}.";
             }
             catch (Exception ex)
             {
                 StatusText.Text = "Error: " + ex.Message;
             }
+        }
+
+        private void AddLog(string message)
+        {
+            DataService.Instance.AddLog(message);
+            RefreshLogs();
+        }
+
+        private void RefreshLogs()
+        {
+            LogBox.Text = string.Join(Environment.NewLine, DataService.Instance.Logs);
+            LogBox.ScrollToEnd();
         }
 
     }
