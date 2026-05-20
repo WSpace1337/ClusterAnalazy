@@ -174,6 +174,7 @@
     <Compile Include="Core\Algoritms\HierarchicalClustering.cs" />
     <Compile Include="Core\Algoritms\KMeansAlgorithm.cs" />
     <Compile Include="Core\Interfaces\IClusteringAlgorithm.cs" />
+    <Compile Include="Core\Models\AlgorithmComparisonResult.cs" />
     <Compile Include="Core\Models\ClusterResult.cs" />
     <Compile Include="Core\Models\DendrogramNode.cs" />
     <Compile Include="Core\Models\MlCustomerInput.cs" />

@@ -6,6 +6,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -59,6 +60,52 @@
                     <TextBlock Text="Average Income" Foreground="Gray"/>
                     <TextBlock x:Name="AvgIncomeText" FontSize="28" FontWeight="Bold"/>
                 </StackPanel>
+            </Border>
+
+            <Border Grid.Row="2"
+        Background="White"
+        CornerRadius="12"
+        Padding="16"
+        Margin="0 20 0 0"
+        BorderBrush="#E2E8F0"
+        BorderThickness="1">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                        <TextBlock Text="Algorithm Comparison"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+                        
+                    </StackPanel>
+
+                    <DataGrid x:Name="ComparisonGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Algorithm" Binding="{Binding Algorithm}" Width="*"/>
+                            <DataGridTextColumn Header="Clusters" Binding="{Binding Clusters}" Width="100"/>
+                            <DataGridTextColumn Header="Noise" Binding="{Binding Noise}" Width="100"/>
+                            <DataGridTextColumn Header="Silhouette" Binding="{Binding Silhouette, StringFormat=F4}" Width="130"/>
+                            <DataGridTextColumn Header="Davies-Bouldin" Binding="{Binding DaviesBouldin, StringFormat=F4}" Width="150"/>
+                            <DataGridTextColumn Header="Calinski-Harabasz" Binding="{Binding CalinskiHarabasz, StringFormat=F4}" Width="160"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock x:Name="StatusText"
+           FontSize="16"
+           Grid.Row="1"
+           Text="Ready"
+           FontStyle="Italic"
+           Margin="5"/>
+                </Grid>
             </Border>
 
         </UniformGrid>
