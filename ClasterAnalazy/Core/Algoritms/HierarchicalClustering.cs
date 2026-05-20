@@ -12,15 +12,12 @@ namespace ClusterVisualizer.Core.Algorithms
 
         public ClusterResult Calculate(List<PointData> points, int k, Action<string> log = null)
         {
-
             log?.Invoke($"Hierarchical clustering started. Points: {points.Count}, Target K = {k}");
+            log?.Invoke("Using optimized Ward linkage.");
 
-            var clusters = new List<List<PointData>>();
-
-            foreach (var p in points)
-            {
-                clusters.Add(new List<PointData> { p });
-            }
+            var clusters = points
+                .Select(p => new WardCluster(p))
+                .ToList();
 
             int mergeStep = 0;
 
@@ -34,7 +31,7 @@ namespace ClusterVisualizer.Core.Algorithms
                 {
                     for (int j = i + 1; j < clusters.Count; j++)
                     {
-                        double dist = ClusterDistance(clusters[i], clusters[j]);
+                        double dist = WardDistance(clusters[i], clusters[j]);
 
                         if (dist < minDistance)
                         {
@@ -47,34 +44,32 @@ namespace ClusterVisualizer.Core.Algorithms
 
                 mergeStep++;
 
-                if (mergeStep <= 10 || mergeStep % 10 == 0 || clusters.Count == k + 1)
+                if (mergeStep <= 10 || mergeStep % 50 == 0 || clusters.Count == k + 1)
                 {
                     log?.Invoke(
                         $"Step {mergeStep}: merging clusters {clusterA} and {clusterB}, " +
                         $"distance={minDistance:F4}, remaining={clusters.Count - 1}");
                 }
-                clusters[clusterA].AddRange(clusters[clusterB]);
+
+                clusters[clusterA].Merge(clusters[clusterB]);
                 clusters.RemoveAt(clusterB);
             }
 
             for (int i = 0; i < clusters.Count; i++)
             {
-                foreach (var p in clusters[i])
+                foreach (var p in clusters[i].Points)
                 {
                     p.ClusterId = i;
                 }
             }
 
-            var centroids = new List<PointData>();
-
-            foreach (var cluster in clusters)
-            {
-                centroids.Add(new PointData
+            var centroids = clusters
+                .Select(c => new PointData
                 {
-                    X = cluster.Average(p => p.X),
-                    Y = cluster.Average(p => p.Y)
-                });
-            }
+                    X = c.CentroidX,
+                    Y = c.CentroidY
+                })
+                .ToList();
 
             for (int i = 0; i < clusters.Count; i++)
             {
@@ -89,6 +84,46 @@ namespace ClusterVisualizer.Core.Algorithms
                 ClusterCount = clusters.Count,
                 Centroids = centroids
             };
+        }
+
+        private class WardCluster
+        {
+            public List<PointData> Points { get; } = new List<PointData>();
+
+            public int Count { get; private set; }
+
+            public double SumX { get; private set; }
+            public double SumY { get; private set; }
+
+            public double CentroidX => SumX / Count;
+            public double CentroidY => SumY / Count;
+
+            public WardCluster(PointData point)
+            {
+                Points.Add(point);
+                Count = 1;
+                SumX = point.X;
+                SumY = point.Y;
+            }
+
+            public void Merge(WardCluster other)
+            {
+                Points.AddRange(other.Points);
+
+                Count += other.Count;
+                SumX += other.SumX;
+                SumY += other.SumY;
+            }
+        }
+
+        private double WardDistance(WardCluster c1, WardCluster c2)
+        {
+            double dx = c1.CentroidX - c2.CentroidX;
+            double dy = c1.CentroidY - c2.CentroidY;
+
+            double squaredDistance = dx * dx + dy * dy;
+
+            return ((double)c1.Count * c2.Count) / (c1.Count + c2.Count) * squaredDistance;
         }
 
         public DendrogramNode BuildTree(List<PointData> points)
@@ -171,20 +206,24 @@ namespace ClusterVisualizer.Core.Algorithms
 
         private double ClusterDistance(List<PointData> c1, List<PointData> c2)
         {
-            double maxDist = double.MinValue;
-
-            foreach (var p1 in c1)
+            var centroid1 = new PointData
             {
-                foreach (var p2 in c2)
-                {
-                    double dist = Distance(p1, p2);
+                X = c1.Average(p => p.X),
+                Y = c1.Average(p => p.Y)
+            };
 
-                    if (dist > maxDist)
-                        maxDist = dist;
-                }
-            }
+            var centroid2 = new PointData
+            {
+                X = c2.Average(p => p.X),
+                Y = c2.Average(p => p.Y)
+            };
 
-            return maxDist;
+            double dx = centroid1.X - centroid2.X;
+            double dy = centroid1.Y - centroid2.Y;
+
+            double squaredDistance = dx * dx + dy * dy;
+
+            return ((double)c1.Count * c2.Count) / (c1.Count + c2.Count) * squaredDistance;
         }
 
         private double Distance(PointData a, PointData b)

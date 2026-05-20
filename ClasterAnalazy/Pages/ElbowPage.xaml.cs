@@ -74,7 +74,7 @@ namespace ClusterVisualizer.Pages
 
                 var values = await Task.Run(() =>
                 {
-                    return elbowService.Calculate(points, 10, logger);
+                    return elbowService.Calculate(points, maxK, logger);
                 });
 
                 var kneeDetector = new KneeDetector();

@@ -180,6 +180,7 @@
     <Compile Include="Core\Models\MlCustomerInput.cs" />
     <Compile Include="Core\Models\MlCustomerPrediction.cs" />
     <Compile Include="Core\Models\PointData.cs" />
+    <Compile Include="Core\Models\RfmCustomer.cs" />
     <Compile Include="Core\Models\users.cs" />
     <Compile Include="Data\JsonUserRepository.cs" />
     <Compile Include="Pages\ClusteringPage.xaml.cs">
@@ -193,6 +194,9 @@
     </Compile>
     <Compile Include="Pages\PredictionPage.xaml.cs">
       <DependentUpon>PredictionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RfmPage.xaml.cs">
+      <DependentUpon>RfmPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -212,6 +216,7 @@
     <Compile Include="Services\MlMetricsResult.cs" />
     <Compile Include="Services\MlTrainingService.cs" />
     <Compile Include="Services\ModelStorageService.cs" />
+    <Compile Include="Services\RfmService.cs" />
     <Compile Include="Services\SessionManager.cs" />
     <Compile Include="Services\SilhouetteService.cs" />
     <Compile Include="Services\UserService.cs" />
@@ -234,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\PredictionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\RfmPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -124,6 +124,11 @@ namespace ClusterVisualizer.Services
         }
 
 
+        public List<RfmCustomer> RfmCustomers { get; private set; } = new List<RfmCustomer>();
 
+        public void SetRfmCustomers(List<RfmCustomer> customers)
+        {
+            RfmCustomers = customers;
+        }
     }
 }

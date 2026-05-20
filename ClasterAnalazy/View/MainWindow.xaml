@@ -59,6 +59,12 @@
                         Click="Prediction_Click"
                         Style="{StaticResource SidebarButton}"/>
                 
+                
+                <Button x:Name="RfmButton"
+                        Content="RFM Analysis"
+                        Click="Rfm_Click"
+                        Style="{StaticResource SidebarButton}"/>
+                
                 <Button x:Name="UsersMenu"
                         Content="Users"
                         Click="Users_Click"

@@ -338,7 +338,6 @@ namespace ClusterVisualizer.Pages
 
                 DataService.Instance.SetClusterResult(result);
 
-                DataService.Instance.ClearAlgorithmComparison();
 
                 var modelPlot = plotService.BuildPlot(result);
 

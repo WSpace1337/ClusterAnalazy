@@ -52,6 +52,11 @@ namespace ClusterVisualizer.Views
             SetActiveMenu(PredictionButton);
         }
 
+        private void Rfm_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new RfmPage());
+            SetActiveMenu(RfmButton);
+        }
         private void Setting_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new SettingsPage());
@@ -64,12 +69,14 @@ namespace ClusterVisualizer.Views
             SetActiveMenu(UsersMenu);
         }
 
+
         private void SetActiveMenu(Button activeButton)
         {
             DashboardButton.Background = System.Windows.Media.Brushes.Transparent;
             ClusteringButton.Background = System.Windows.Media.Brushes.Transparent;
             ElbowButton.Background = System.Windows.Media.Brushes.Transparent;
             PredictionButton.Background = System.Windows.Media.Brushes.Transparent;
+            RfmButton.Background = System.Windows.Media.Brushes.Transparent;
             SettingsButton.Background = System.Windows.Media.Brushes.Transparent;
             UsersMenu.Background = System.Windows.Media.Brushes.Transparent;
 
