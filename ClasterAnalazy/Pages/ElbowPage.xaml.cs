@@ -107,7 +107,11 @@ namespace ClusterVisualizer.Pages
         private void RefreshLogs()
         {
             LogBox.Text = string.Join(Environment.NewLine, DataService.Instance.Logs);
-            LogBox.ScrollToEnd();
+
+            LogBox.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                LogBox.ScrollToEnd();
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
     }

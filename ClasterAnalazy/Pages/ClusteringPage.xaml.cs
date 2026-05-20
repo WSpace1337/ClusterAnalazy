@@ -339,6 +339,26 @@ namespace ClusterVisualizer.Pages
 
                 var modelPlot = plotService.BuildPlot(result);
 
+
+                /// оцінка якості кластерів
+
+                var qualityService = new ClusterQualityService();
+
+                double silhouette = qualityService.SilhouetteScore(result.Points);
+                double dbi = qualityService.DaviesBouldinIndex(result.Points);
+                double ch = qualityService.CalinskiHarabaszIndex(result.Points);
+
+
+                AddLog("------------------------------------------------------------");
+                AddLog($"Algorithm clustering: {selectedAlgorithm.Name}");
+                AddLog("Cluster quality metrics:");
+                AddLog($"Silhouette Score: {silhouette:F4}  (higher is better)");
+                AddLog($"Davies-Bouldin Index: {dbi:F4}  (lower is better)");
+                AddLog($"Calinski-Harabasz Index: {ch:F4}  (higher is better)");
+                AddLog("------------------------------------------------------------");
+
+                ///
+
                 PlotView.Model = modelPlot;
 
                 DataService.Instance.SetClusterResult(result);
@@ -462,7 +482,11 @@ namespace ClusterVisualizer.Pages
         private void RefreshLogs()
         {
             LogBox.Text = string.Join(Environment.NewLine, DataService.Instance.Logs);
-            LogBox.ScrollToEnd();
+
+            LogBox.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                LogBox.ScrollToEnd();
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
     }
 }

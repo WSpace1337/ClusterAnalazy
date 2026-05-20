@@ -201,12 +201,14 @@
     </Compile>
     <Compile Include="Services\AppSettings.cs" />
     <Compile Include="Services\ClusteringFactory.cs" />
+    <Compile Include="Services\ClusterQualityService.cs" />
     <Compile Include="Services\ClusterService.cs" />
     <Compile Include="Services\DataLoader.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\DbscanParameterService.cs" />
     <Compile Include="Services\ElbowService.cs" />
     <Compile Include="Services\KneeDetector.cs" />
+    <Compile Include="Services\MlMetricsResult.cs" />
     <Compile Include="Services\MlTrainingService.cs" />
     <Compile Include="Services\ModelStorageService.cs" />
     <Compile Include="Services\SessionManager.cs" />

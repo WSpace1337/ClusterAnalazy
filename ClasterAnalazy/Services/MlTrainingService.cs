@@ -140,6 +140,49 @@ namespace ClusterVisualizer.Services
             return predictionEngine.Predict(input);
         }
 
+        private IEstimator<ITransformer> BuildPipeline(MlAlgorithmType algorithmType)
+        {
+            IEstimator<ITransformer> pipeline =
+                mlContext.Transforms.Conversion.MapValueToKey(
+                    outputColumnName: "Label",
+                    inputColumnName: "Label")
+                .Append(mlContext.Transforms.Concatenate(
+                    outputColumnName: "Features",
+                    "X", "Y"));
+
+            switch (algorithmType)
+            {
+                case MlAlgorithmType.LogisticRegression:
+                    pipeline = pipeline.Append(
+                        mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy(
+                            labelColumnName: "Label",
+                            featureColumnName: "Features"));
+                    break;
+
+                case MlAlgorithmType.GradientBoosting:
+                    pipeline = pipeline.Append(
+                        mlContext.MulticlassClassification.Trainers.LightGbm(
+                            labelColumnName: "Label",
+                            featureColumnName: "Features"));
+                    break;
+
+                case MlAlgorithmType.RandomForest:
+                    pipeline = pipeline.Append(
+                        mlContext.MulticlassClassification.Trainers.OneVersusAll(
+                            mlContext.BinaryClassification.Trainers.FastForest(
+                                labelColumnName: "Label",
+                                featureColumnName: "Features")));
+                    break;
+            }
+
+            pipeline = pipeline.Append(
+                mlContext.Transforms.Conversion.MapKeyToValue(
+                    outputColumnName: "PredictedLabel",
+                    inputColumnName: "PredictedLabel"));
+
+            return pipeline;
+        }
+
         public string Predict(ITransformer model, double x, double y)
         {
             if (model == null)
@@ -171,19 +214,27 @@ namespace ClusterVisualizer.Services
 
             var dataView = mlContext.Data.LoadFromEnumerable(data);
 
-            var model = Train(points, algorithmType, log);
+            var split = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+
+            var pipeline = BuildPipeline(algorithmType);
+
+            var model = pipeline.Fit(split.TrainSet);
 
             return new MlTrainResult
             {
                 Model = model,
-                Schema = dataView.Schema
+                Schema = dataView.Schema,
+                TestData = split.TestSet
             };
         }
 
         public class MlTrainResult
         {
+
+            public IDataView TestData { get; set; }
             public ITransformer Model { get; set; }
             public DataViewSchema Schema { get; set; }
+
         }
 
         public ITransformer LoadModel(string path, out DataViewSchema schema)
@@ -192,6 +243,24 @@ namespace ClusterVisualizer.Services
                 throw new Exception("Model file not found.");
 
             return mlContext.Model.Load(path, out schema);
+        }
+
+        public MlMetricsResult EvaluateModel(ITransformer model, IDataView testData)
+        {
+            var predictions = model.Transform(testData);
+
+            var metrics = mlContext.MulticlassClassification.Evaluate(
+                predictions,
+                labelColumnName: "Label",
+                predictedLabelColumnName: "PredictedLabel");
+
+            return new MlMetricsResult
+            {
+                Accuracy = metrics.MacroAccuracy,
+                MacroAccuracy = metrics.MacroAccuracy,
+                MicroAccuracy = metrics.MicroAccuracy,
+                LogLoss = metrics.LogLoss
+            };
         }
     }
 }

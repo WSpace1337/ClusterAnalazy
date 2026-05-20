@@ -104,6 +104,37 @@ namespace ClusterVisualizer.Pages
 
                 DataService.Instance.SetMlModel(trainResult.Model);
 
+                var metrics = mlService.EvaluateModel(trainResult.Model, trainResult.TestData);
+
+
+                ///метрики для МН
+                AddLog("------------------------------------------------------------");
+                AddLog("ML evaluation metrics:");
+                AddLog($"Accuracy: {metrics.Accuracy:F4}");
+                AddLog($"MacroAccuracy: {metrics.MacroAccuracy:F4}");
+                AddLog($"MicroAccuracy: {metrics.MicroAccuracy:F4}");
+                AddLog($"LogLoss: {metrics.LogLoss:F4}");
+                AddLog("------------------------------------------------------------");
+
+                AddLog("How to interpret ML metrics:");
+                AddLog("Accuracy / MicroAccuracy:");
+                AddLog("  0.90+  -> excellent model");
+                AddLog("  0.80+  -> good model");
+                AddLog("  0.70+  -> acceptable model");
+                AddLog("  <0.60  -> weak model");
+
+                AddLog("MacroAccuracy:");
+                AddLog("  Shows average quality across all classes.");
+                AddLog("  Useful when cluster sizes are unbalanced.");
+
+                AddLog("LogLoss:");
+                AddLog("  Lower is better.");
+                AddLog("  Close to 0 means confident and correct predictions.");
+                AddLog("  High LogLoss means uncertain or wrong predictions.");
+                AddLog("------------------------------------------------------------");
+
+                ///
+
                 await Task.Run(() =>
                 {
                     modelStorageService.SaveModel(trainResult.Model, trainResult.Schema);
@@ -125,11 +156,19 @@ namespace ClusterVisualizer.Pages
             }
         }
 
-        private void AddLog(string message)
+        private void AddLog(string message, bool withTime = true)
         {
-            string time = DateTime.Now.ToString("HH:mm:ss");
-            LogBox.AppendText($"[{time}] {message}\n");
-            LogBox.ScrollToEnd();
+            if (withTime)
+            {
+                string time = DateTime.Now.ToString("HH:mm:ss");
+                DataService.Instance.Logs.Add($"[{time}] {message}");
+            }
+            else
+            {
+                DataService.Instance.Logs.Add(message);
+            }
+
+            RefreshLogs();
         }
 
         private void LoadSavedModel_Click(object sender, RoutedEventArgs e)
@@ -207,7 +246,11 @@ namespace ClusterVisualizer.Pages
         private void RefreshLogs()
         {
             LogBox.Text = string.Join(Environment.NewLine, DataService.Instance.Logs);
-            LogBox.ScrollToEnd();
+
+            LogBox.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                LogBox.ScrollToEnd();
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void ShowLoading()
