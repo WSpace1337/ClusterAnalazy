@@ -9,6 +9,9 @@ using ClusterVisualizer.Core.Models;
 using ClusterVisualizer.Interfaces;
 
 
+using System.Data;
+using System.IO;
+
 
 namespace ClusterVisualizer.Pages
 {
@@ -19,7 +22,9 @@ namespace ClusterVisualizer.Pages
             InitializeComponent();
             LoadDashboard();
 
-            Loaded += DashboardPage_Loaded;
+            LoadDataPreview();
+
+            LoadAlgorithmComparison();
         }
 
         private void LoadDashboard()
@@ -50,61 +55,50 @@ namespace ClusterVisualizer.Pages
                 : points.Average(p => p.OriginalY).ToString("F1");
         }
 
-        private async void DashboardPage_Loaded(object sender, RoutedEventArgs e)
+        private void LoadAlgorithmComparison()
         {
-            await RunComparisonAsync();
+            ComparisonGrid.ItemsSource = DataService.Instance.AlgorithmComparisonResults;
+            StatusText.Text = "Comparison loaded from clustering results.";
         }
 
-        private async Task RunComparisonAsync()
+        private void LoadDataPreview()
         {
-            var points = DataService.Instance.Points;
+            string path = DataService.Instance.LoadedFilePath;
 
-            if (points == null)
-            {
-                StatusText.Text = "Load data first.";
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 return;
+
+            var lines = File.ReadLines(path).ToList();
+
+            StatusText.Text = $"Loaded rows: {lines.Count - 1}";
+
+            if (lines.Count == 0)
+                return;
+
+            var table = new DataTable();
+
+            var headers = lines[0].Split(',');
+
+            foreach (var header in headers)
+            {
+                table.Columns.Add(header);
             }
 
-            StatusText.Text = "Running comparison...";
-
-            var results = await Task.Run(() =>
+            foreach (var line in lines.Skip(1))
             {
-                var list = new List<AlgorithmComparisonResult>();
-                var quality = new ClusterQualityService();
+                var values = line.Split(',');
 
-                var algorithms = new List<(string Name, IClusteringAlgorithm Algorithm, int K)>
-        {
-            ("K-Means", new KMeansAlgorithm(), 3),
-            ("Hierarchical", new HierarchicalClustering(), 3),
-            ("DBSCAN", new DBSCANAlgorithm(AppSettings.DefaultEps, AppSettings.DefaultMinPts), 0)
-        };
+                var row = table.NewRow();
 
-                foreach (var item in algorithms)
+                for (int i = 0; i < headers.Length; i++)
                 {
-                    var cloned = points.Select(p => new PointData
-                    {
-                        X = p.X,
-                        Y = p.Y
-                    }).ToList();
-
-                    var result = item.Algorithm.Calculate(cloned, item.K);
-
-                    list.Add(new AlgorithmComparisonResult
-                    {
-                        Algorithm = item.Name,
-                        Clusters = result.ClusterCount,
-                        Noise = result.Points.Count(p => p.ClusterId == -2),
-                        Silhouette = quality.SilhouetteScore(result.Points),
-                        DaviesBouldin = quality.DaviesBouldinIndex(result.Points),
-                        CalinskiHarabasz = quality.CalinskiHarabaszIndex(result.Points)
-                    });
+                    row[i] = i < values.Length ? values[i] : "";
                 }
 
-                return list;
-            });
+                table.Rows.Add(row);
+            }
 
-            ComparisonGrid.ItemsSource = results;
-            StatusText.Text = "Comparison completed.";
+            DataPreviewGrid.ItemsSource = table.DefaultView;
         }
     }
 }

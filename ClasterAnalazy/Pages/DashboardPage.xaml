@@ -2,113 +2,225 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="25">
+    <Grid Margin="10" Background="#F1F5F9">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
 
-        <TextBlock Text="Dashboard"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Margin="0 0 0 20"/>
+            <Grid>
 
-        <UniformGrid Grid.Row="1"
-                     Columns="3"
-                     Rows="2"
-                     Margin="0 20 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Customers" Foreground="Gray"/>
-                    <TextBlock x:Name="CustomersText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                <TextBlock Grid.Row="0"
+                           Text="Dashboard"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Margin="10 10 0 20"/>
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Clusters" Foreground="Gray"/>
-                    <TextBlock x:Name="ClustersText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                <!-- Карточки статистики -->
+                <UniformGrid Grid.Row="1"
+                             Columns="3"
+                             Rows="2"
+                             Margin="0 0 0 10">
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Optimal K" Foreground="Gray"/>
-                    <TextBlock x:Name="OptimalKText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Customers" Foreground="Gray"/>
+                            <TextBlock x:Name="CustomersText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Noise Points" Foreground="Gray"/>
-                    <TextBlock x:Name="NoiseText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Clusters" Foreground="Gray"/>
+                            <TextBlock x:Name="ClustersText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Average Age" Foreground="Gray"/>
-                    <TextBlock x:Name="AvgAgeText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Optimal K" Foreground="Gray"/>
+                            <TextBlock x:Name="OptimalKText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Background="#F4F6F8" CornerRadius="10" Padding="20" Margin="8">
-                <StackPanel>
-                    <TextBlock Text="Average Income" Foreground="Gray"/>
-                    <TextBlock x:Name="AvgIncomeText" FontSize="28" FontWeight="Bold"/>
-                </StackPanel>
-            </Border>
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Noise Points" Foreground="Gray"/>
+                            <TextBlock x:Name="NoiseText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-            <Border Grid.Row="2"
-        Background="White"
-        CornerRadius="12"
-        Padding="16"
-        Margin="0 20 0 0"
-        BorderBrush="#E2E8F0"
-        BorderThickness="1">
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Average Age" Foreground="Gray"/>
+                            <TextBlock x:Name="AvgAgeText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="20"
+                            Margin="8"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Average Income" Foreground="Gray"/>
+                            <TextBlock x:Name="AvgIncomeText"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
 
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                        <TextBlock Text="Algorithm Comparison"
-                       FontSize="20"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
-                        
-                    </StackPanel>
+                </UniformGrid>
 
-                    <DataGrid x:Name="ComparisonGrid"
-                  Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False">
+                <!-- Таблица сравнения алгоритмов -->
+                <Border Grid.Row="2"
+                        Background="White"
+                        CornerRadius="12"
+                        Padding="16"
+                        Margin="8"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1">
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Algorithm" Binding="{Binding Algorithm}" Width="*"/>
-                            <DataGridTextColumn Header="Clusters" Binding="{Binding Clusters}" Width="100"/>
-                            <DataGridTextColumn Header="Noise" Binding="{Binding Noise}" Width="100"/>
-                            <DataGridTextColumn Header="Silhouette" Binding="{Binding Silhouette, StringFormat=F4}" Width="130"/>
-                            <DataGridTextColumn Header="Davies-Bouldin" Binding="{Binding DaviesBouldin, StringFormat=F4}" Width="150"/>
-                            <DataGridTextColumn Header="Calinski-Harabasz" Binding="{Binding CalinskiHarabasz, StringFormat=F4}" Width="160"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <TextBlock x:Name="StatusText"
-           FontSize="16"
-           Grid.Row="1"
-           Text="Ready"
-           FontStyle="Italic"
-           Margin="5"/>
-                </Grid>
-            </Border>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-        </UniformGrid>
+                        <TextBlock Grid.Row="0"
+                                   Text="Algorithm Comparison"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 10"/>
+
+                        <TextBlock x:Name="StatusText"
+                                   Grid.Row="1"
+                                   Text="Ready"
+                                   Foreground="Gray"
+                                   FontStyle="Italic"
+                                   Margin="0 0 0 10"/>
+
+                        <DataGrid x:Name="ComparisonGrid"
+                                  Grid.Row="2"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  MinHeight="160"
+                                  MaxHeight="220">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Algorithm"
+                                                    Binding="{Binding Algorithm}"
+                                                    Width="*"/>
+
+                                <DataGridTextColumn Header="Clusters"
+                                                    Binding="{Binding Clusters}"
+                                                    Width="90"/>
+
+                                <DataGridTextColumn Header="Noise"
+                                                    Binding="{Binding Noise}"
+                                                    Width="90"/>
+
+                                <DataGridTextColumn Header="Silhouette"
+                                                    Binding="{Binding Silhouette, StringFormat=F4}"
+                                                    Width="120"/>
+
+                                <DataGridTextColumn Header="Davies-Bouldin"
+                                                    Binding="{Binding DaviesBouldin, StringFormat=F4}"
+                                                    Width="140"/>
+
+                                <DataGridTextColumn Header="Calinski-Harabasz"
+                                                    Binding="{Binding CalinskiHarabasz, StringFormat=F4}"
+                                                    Width="160"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </Grid>
+
+                </Border>
+
+                <!-- Таблица загруженных данных -->
+                <Border Grid.Row="3"
+                        Background="White"
+                        CornerRadius="12"
+                        Padding="16"
+                        Margin="8"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Loaded Data Preview"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 10"/>
+
+                        <DataGrid x:Name="DataPreviewGrid"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="True"
+                                  ColumnWidth="*"
+                                  HorizontalContentAlignment="Stretch"
+                                  
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  MinHeight="220"
+                                  MaxHeight="320"/>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+        </ScrollViewer>
 
     </Grid>
+
 </Page>

@@ -87,11 +87,16 @@ namespace ClusterVisualizer.Pages
                 viewModel.LoadData(dialog.FileName);
 
                 DataService.Instance.Points = viewModel.Points;
+                
+                DataService.Instance.ClearAlgorithmComparison();
+
+                DataService.Instance.LoadedFilePath = dialog.FileName;
 
                 StatusText.Text = dialog.FileName;
 
                 AddLog($"Dataset loaded: {dialog.FileName}");
                 LogTablePreview(dialog.FileName);
+
             }
         }
 
@@ -288,7 +293,6 @@ namespace ClusterVisualizer.Pages
                 StatusText.Text = "Clustering...";
 
                 string epsText = EpsBox.Text;
-                EpsBox.Text = AppSettings.DefaultEps.ToString();
                 string minPtsText = MinPtsBox.Text;
                 string clusterCountText = ClusterCountBox.Text;
 
@@ -334,8 +338,7 @@ namespace ClusterVisualizer.Pages
 
                 DataService.Instance.SetClusterResult(result);
 
-                var mlService = new MlTrainingService();
-
+                DataService.Instance.ClearAlgorithmComparison();
 
                 var modelPlot = plotService.BuildPlot(result);
 
@@ -348,6 +351,16 @@ namespace ClusterVisualizer.Pages
                 double dbi = qualityService.DaviesBouldinIndex(result.Points);
                 double ch = qualityService.CalinskiHarabaszIndex(result.Points);
 
+                DataService.Instance.AddAlgorithmComparisonResult(new AlgorithmComparisonResult
+                {
+                    Algorithm = selectedAlgorithm.Name,
+                    Clusters = result.ClusterCount,
+                    Noise = result.Points.Count(p => p.ClusterId == -2),
+                    Silhouette = silhouette,
+                    DaviesBouldin = dbi,
+                    CalinskiHarabasz = ch
+                });
+
 
                 AddLog("------------------------------------------------------------");
                 AddLog($"Algorithm clustering: {selectedAlgorithm.Name}");
@@ -359,31 +372,63 @@ namespace ClusterVisualizer.Pages
 
                 ///
 
+                if (selectedAlgorithm is DBSCANAlgorithm)
+                {
+                    int noise = result.Points.Count(p => p.ClusterId == -2);
+
+                    double noiseRatio =
+                        (double)noise / result.Points.Count * 100;
+
+                    AddLog($"Noise points: {noise}");
+                    AddLog($"Noise ratio: {noiseRatio:F1}%");
+
+                    if (result.ClusterCount <= 1)
+                    {
+                        AddLog("Warning: eps may be too large.");
+                    }
+
+                    if (result.ClusterCount > 20)
+                    {
+                        AddLog("Warning: eps may be too small.");
+                    }
+
+                    if (noiseRatio > 40)
+                    {
+                        AddLog("Warning: too many noise points.");
+                    }
+
+                    if (noiseRatio > 50)
+                    {
+                        AddLog("Warning: too many noise points.");
+                        AddLog("Try increasing eps.");
+                    }
+
+                    if (silhouette >= 0.5)
+                    {
+                        AddLog("Cluster quality: excellent");
+                    }
+                    else if (silhouette >= 0.35)
+                    {
+                        AddLog("Cluster quality: good");
+                    }
+                    else if (silhouette >= 0.2)
+                    {
+                        AddLog("Cluster quality: acceptable");
+                    }
+                    else
+                    {
+                        AddLog("Cluster quality: weak");
+                    }
+
+                    AddLog("------------------------------------------------------------");
+                }
+
+
                 PlotView.Model = modelPlot;
 
-                DataService.Instance.SetClusterResult(result);
+
 
                 StatusText.Text = $"Done ({result.ClusterCount} clusters)";
-
-                int classCount = result.Points
-                                            .Where(p => p.ClusterId >= 0)
-                                            .Select(p => p.ClusterId)
-                                            .Distinct()
-                                            .Count();
-
-                if (classCount < 2)
-                {
-                    AddLog("ML training skipped.");
-                    AddLog("Reason: less than 2 clusters were found.");
-                    AddLog("DBSCAN may produce 1 cluster + noise.");
-                    return;
-                }
-                var model = mlService.Train(
-                    result.Points,
-                    MlAlgorithmType.GradientBoosting
-                );
-
-                DataService.Instance.SetMlModel(model);
             }
             catch (Exception ex)
             {

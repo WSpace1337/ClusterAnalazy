@@ -50,6 +50,8 @@ namespace ClusterVisualizer.Core.Algorithms
             }
 
             int noise = points.Count(p => p.ClusterId == -2);
+
+
             log?.Invoke($"DBSCAN finished. Clusters = {clusterId}, Noise = {noise}");
 
             return new ClusterResult

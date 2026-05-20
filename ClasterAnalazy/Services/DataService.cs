@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ClusterVisualizer.Core.Models;
 using Microsoft.ML;
 
-using OxyPlot;
 
 
 
@@ -14,6 +13,14 @@ namespace ClusterVisualizer.Services
         private static readonly DataService instance = new DataService();
         public static DataService Instance => instance;
 
+        public string LoadedFilePath { get; set; }
+
+        public void ClearAlgorithmComparison()
+        {
+            AlgorithmComparisonResults.Clear();
+        }
+
+
         private DataService() { }
 
         public List<PointData> Points { get; set; }
@@ -23,6 +30,23 @@ namespace ClusterVisualizer.Services
         public Dictionary<int, double> ElbowValues { get; private set; }
 
         public int? OptimalK { get; private set; }
+
+        public List<AlgorithmComparisonResult> AlgorithmComparisonResults { get; private set; } = new List<AlgorithmComparisonResult>();
+
+
+        public void AddAlgorithmComparisonResult(AlgorithmComparisonResult result)
+        {
+            if (AlgorithmComparisonResults == null)
+                AlgorithmComparisonResults = new List<AlgorithmComparisonResult>();
+
+            AlgorithmComparisonResults.RemoveAll(x => x.Algorithm == result.Algorithm);
+            AlgorithmComparisonResults.Add(result);
+        }
+
+        public void SetAlgorithmComparisonResults(List<AlgorithmComparisonResult> results)
+        {
+            AlgorithmComparisonResults = results ?? new List<AlgorithmComparisonResult>();
+        }
 
         public void SetPoints(List<PointData> points)
         {
@@ -98,6 +122,8 @@ namespace ClusterVisualizer.Services
             string time = DateTime.Now.ToString("HH:mm:ss");
             Logs.Add($"[{time}] {message}");
         }
+
+
 
     }
 }
