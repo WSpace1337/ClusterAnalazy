@@ -25,6 +25,8 @@ namespace ClusterVisualizer.Pages
             LoadDataPreview();
 
             LoadAlgorithmComparison();
+
+            LoadRfmAnalytics();
         }
 
         private void LoadDashboard()
@@ -59,6 +61,39 @@ namespace ClusterVisualizer.Pages
         {
             ComparisonGrid.ItemsSource = DataService.Instance.AlgorithmComparisonResults;
             StatusText.Text = "Comparison loaded from clustering results.";
+        }
+
+        private void LoadRfmAnalytics()
+        {
+            var customers = DataService.Instance.RfmCustomers;
+
+            if (customers == null || customers.Count == 0)
+            {
+                RfmStatusText.Text = "RFM data not loaded.";
+                RfmDashboardGrid.ItemsSource = null;
+                return;
+            }
+
+            int total = customers.Count;
+
+            var summary = customers
+                .GroupBy(c => c.Segment)
+                .Select(g => new
+                {
+                    Segment = g.Key,
+                    Count = g.Count(),
+                    Percent = $"{(double)g.Count() / total * 100:F1}%",
+                    AvgR = g.Average(c => c.RScore).ToString("F2"),
+                    AvgF = g.Average(c => c.FScore).ToString("F2"),
+                    AvgM = g.Average(c => c.MScore).ToString("F2"),
+                    AvgTotal = g.Average(c => c.TotalScore).ToString("F2")
+                })
+                .OrderByDescending(x => x.Count)
+                .ToList();
+
+            RfmDashboardGrid.ItemsSource = summary;
+
+            RfmStatusText.Text = $"RFM customers loaded: {total}";
         }
 
         private void LoadDataPreview()
